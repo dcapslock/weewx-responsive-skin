@@ -1,0 +1,486 @@
+#errorCatcher Echo
+##
+## Specifying an encoding of UTF-8 is usually safe, but if your text is 
+## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
+#encoding UTF-8
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>$station.location Weather</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+    rel="stylesheet">
+    <link href="weewx-responsive.css" rel="stylesheet">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <script type='text/javascript'>//<![CDATA[ 
+      jQuery(window).load(function(){
+        jQuery('div.btn-group ul.dropdown-menu li a').on('click', function (e) {
+            var url = "NOAA/NOAA-";
+            
+            e.preventDefault(); // prevent the default anchor functionality
+            url = url + jQuery(e.target).closest('a').data('file');
+            url = url + ".txt";
+            window.open(url, '_blank');
+        });
+      });//]]>
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row panel panel-primary">
+        <div class="col-md-12 panel-heading">
+          <div class="col-md-6">
+            <h4>$station.location Weather</h4>
+          </div>
+          <div class="col-md-6 text-right">
+            <h4 class="text-right">$current.dateTime</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">      
+      <div class="row">
+        <div class="col-md-8 col-md-push-4">
+          <div class="row panel-group" id="accordianOne">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordianOne" href="#collapseAccOneOne"
+                  draggable="true">Month's Graphs</a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccOneOne">
+                <div id="graphs" class="panel-body">
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthtempdew.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="temperatures" />
+                  </div>
+                  #if $month.apptemp.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthapptemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                  </div>
+                  #end if
+                  #if $month.heatindex.has_data or $month.windchill.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthtempchill.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="heatchill" />
+                  </div>
+                  #end if
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthrain.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="rain" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthwind.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="wind" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthbarometer.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="barometer"/>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthwinddir.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Hi Wind" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthinside.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Inside" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthwindvec.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Wind Vector" />
+                  </div>
+                  #if $month.radiation.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthradiation.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radiation" />
+                  </div>
+                  #end if
+                  #if $month.UV.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthuv.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="UV Index" />
+                  </div>
+                  #end if
+                  #if $month.rxCheckPercent.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthrx.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="month rx percent"/>
+                  </div>
+                  #end if
+                  #if $month.extraTemp1.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthpond.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Pond Temperatures" />
+                  </div>
+                  #end if
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row col-md-4 col-md-pull-8">
+          <div class="panel-group" id="accordionTwo">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoOne">
+                    This Month
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccTwoOne">
+                <div class="panel-body">
+                  <table class="table table-bordered table-responsive">
+                    <tbody>
+                      <tr>
+                        <td style="border-bottom: none;">High Temperature</td>
+                        <td style="border-bottom: none;">$month.outTemp.max at $month.outTemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Temperature</td>
+                        <td style="border-top: none;">$month.outTemp.min at $month.outTemp.mintime</td>
+                      </tr>
+                      #if $month.heatindex.has_data or $month.windchill.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Heat Index</td>
+                        <td style="border-bottom: none;">$month.heatindex.max at $month.heatindex.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Wind Chill</td>
+                        <td style="border-top: none;">$month.windchill.min at $month.windchill.mintime</td>
+                      </tr>
+                      #end if
+                      #if $month.apptemp.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High App. Temp.</td>
+                        <td style="border-bottom: none;">$month.apptemp.max ($aus.feelslike($month.apptemp.max.raw, $month.apptemp.maxtime.raw)) at $month.apptemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low App. Temp.</td>
+                        <td style="border-top: none;">$month.apptemp.min ($aus.feelslike($month.apptemp.min.raw, $month.apptemp.mintime.raw)) at $month.apptemp.mintime</td>
+                      </tr>
+                      #end if
+                      <tr>
+                        <td style="border-bottom: none;">High Humidity</td>
+                        <td style="border-bottom: none;">$month.outHumidity.max at $month.outHumidity.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Humidity</td>
+                        <td style="border-top: none;">$month.outHumidity.min at $month.outHumidity.mintime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Dewpoint</td>
+                        <td style="border-bottom: none;">$month.dewpoint.max at $month.dewpoint.maxtime</td>
+                      </tr>
+                      <tr>
+                         <td style="border-top: none;">Low Dewpoint</td>
+                         <td style="border-top: none;">$month.dewpoint.min at $month.dewpoint.mintime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Barometer</td>
+                        <td style="border-bottom: none;">$month.barometer.max at $month.barometer.maxtime</td>
+                      <tr>
+                      </tr>
+                        <td style="border-top: none;">Low Barometer</td>
+                        <td style="border-top: none;">$month.barometer.min at $month.barometer.mintime</td>
+                      </tr>
+                      <tr>
+                        <td>Total Rain</td>
+                        <td>$month.rain.sum</td>
+                      </tr>
+                      <tr>
+                        <td>High Rain Rate</td>
+                        <td>$month.rainRate.max at $month.rainRate.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          High Wind
+                        </td>
+                        <td>
+                          $month.wind.max from $month.wind.gustdir ($month.wind.gustDir.ordinal_compass) at $month.wind.maxtime
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          Average Wind
+                        </td>
+                        <td>
+                          $month.wind.avg
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          RMS Wind
+                        </td>
+                        <td>
+                          $month.wind.rms
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">Vector Average Speed</td>
+                        <td style="border-bottom: none;">$month.wind.vecavg</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Vector Average Direction</td>
+                        <td style="border-top: none;">$month.wind.vecdir ($month.wind.vecdir.ordinal_compass)</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Inside Temperature</td>
+                        <td style="border-bottom: none;">$month.inTemp.max at $month.inTemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Inside Temperature</td>
+                        <td style="border-top: none;">$month.inTemp.min at $month.inTemp.mintime</td>
+                      </tr>
+                      #if $month.extraTemp1.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Pond Temperature</td>
+                        <td style="border-bottom: none;">$month.extraTemp1.max at $month.extraTemp1.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Pond Temperature</td>
+                        <td style="border-top: none;">$month.extraTemp1.min at $month.extraTemp1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $month.UV.has_data
+                      ##TODO - Fix up remaining Hi/Low for new responsive layout
+                      <tr>
+                        <td style="border-bottom: none;">High UV</td>
+                        <td style="border-bottom: none;">Low UV</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$month.UV.max at $month.UV.maxtime</td>
+                        <td style="border-top: none;">$month.UV.min at $month.UV.mintime</td>
+                      </tr>
+                      #end if
+                      #if $month.ET.has_data and $month.ET.sum.raw >0.0
+                      <tr>
+                        <td style="border-bottom: none;">High ET</td>
+                        <td style="border-bottom: none;">Low ET</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$month.ET.max at $month.ET.maxtime<td/>
+                        <td style="border-top: none;">$month.ET.min at $month.ET.mintime</td>
+                      </tr>
+                      #end if
+                      #if $month.radiation.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Radiation</td>
+                        <td style="border-bottom: none;">Low Radiation</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$month.radiation.max at $month.radiation.maxtime</td>
+                        <td style="border-top: none;">$month.radiation.min at $month.radiation.mintime</td>
+                      </tr>
+                      #end if
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoTwo">
+                    Calendar Year
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoTwo">
+                <div class="panel-body">
+                  <table class="table table-bordered table-responsive">
+                    <tbody>
+                      <tr>
+                        <td style="border-bottom: none;">High Temperature</td>
+                        <td style="border-bottom: none;">$year.outTemp.max at $year.outTemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Temperature</td>
+                        <td style="border-top: none;">$year.outTemp.min at $year.outTemp.mintime</td>
+                      </tr>
+                      #if $year.heatindex.has_data or $year.windchill.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Heat Index</td>
+                        <td style="border-bottom: none;">$year.heatindex.max at $year.heatindex.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Wind Chill</td>
+                        <td style="border-top: none;">$year.windchill.min at $year.windchill.mintime</td>
+                      </tr>
+                      #end if
+                      #if $year.apptemp.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High App. Temp.</td>
+                        <td style="border-bottom: none;">$year.apptemp.max ($aus.feelslike($year.apptemp.max.raw, $year.apptemp.maxtime.raw)) at $year.apptemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low App. Temp.</td>
+                        <td style="border-top: none;">$year.apptemp.min ($aus.feelslike($year.apptemp.min.raw, $year.apptemp.mintime.raw)) at $year.apptemp.mintime</td>
+                      </tr>
+                      #end if
+                      <tr>
+                        <td style="border-bottom: none;">High Humidity</td>
+                        <td style="border-bottom: none;">$year.outHumidity.max at $year.outHumidity.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Humidity</td>
+                        <td style="border-top: none;">$year.outHumidity.min at $year.outHumidity.mintime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Dewpoint</td>
+                        <td style="border-bottom: none;">$year.dewpoint.max at $year.dewpoint.maxtime</td>
+                      </tr>
+                      <tr>
+                         <td style="border-top: none;">Low Dewpoint</td>
+                         <td style="border-top: none;">$year.dewpoint.min at $year.dewpoint.mintime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Barometer</td>
+                        <td style="border-bottom: none;">$year.barometer.max at $year.barometer.maxtime</td>
+                      <tr>
+                      </tr>
+                        <td style="border-top: none;">Low Barometer</td>
+                        <td style="border-top: none;">$year.barometer.min at $year.barometer.mintime</td>
+                      </tr>
+                      <tr>
+                        <td>Total Rain</td>
+                        <td>$year.rain.sum</td>
+                      </tr>
+                      <tr>
+                        <td>High Rain Rate</td>
+                        <td>$year.rainRate.max at $year.rainRate.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          High Wind
+                        </td>
+                        <td>
+                          $year.wind.max from $year.wind.gustdir ($year.wind.gustDir.ordinal_compass) at $year.wind.maxtime
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          Average Wind
+                        </td>
+                        <td>
+                          $year.wind.avg
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          RMS Wind
+                        </td>
+                        <td>
+                          $year.wind.rms
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">Vector Average Speed</td>
+                        <td style="border-bottom: none;">$year.wind.vecavg</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Vector Average Direction</td>
+                        <td style="border-top: none;">$year.wind.vecdir ($year.wind.vecdir.ordinal_compass)</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Inside Temperature</td>
+                        <td style="border-bottom: none;">$year.inTemp.max at $year.inTemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Inside Temperature</td>
+                        <td style="border-top: none;">$year.inTemp.min at $year.inTemp.mintime</td>
+                      </tr>
+                      #if $year.extraTemp1.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Pond Temperature</td>
+                        <td style="border-bottom: none;">$year.extraTemp1.max at $year.extraTemp1.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Pond Temperature</td>
+                        <td style="border-top: none;">$year.extraTemp1.min at $year.extraTemp1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $year.UV.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High UV</td>
+                        <td style="border-bottom: none;">Low UV</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$year.UV.max at $year.UV.maxtime</td>
+                        <td style="border-top: none;">$year.UV.min at $year.UV.mintime</td>
+                      </tr>
+                      #end if
+                      #if $year.ET.has_data and $year.ET.sum.raw >0.0
+                      <tr>
+                        <td style="border-bottom: none;">High ET</td>
+                        <td style="border-bottom: none;">Low ET</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$year.ET.max at $year.ET.maxtime<td/>
+                        <td style="border-top: none;">$year.ET.min at $year.ET.mintime</td>
+                      </tr>
+                      #end if
+                      #if $year.radiation.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Radiation</td>
+                        <td style="border-bottom: none;">Low Radiation</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$year.radiation.max at $year.radiation.maxtime</td>
+                        <td style="border-top: none;">$year.radiation.min at $year.radiation.mintime</td>
+                      </tr>
+                      #end if
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="panel panel-primary col-xs-12 col-sm-12 col-md-12">
+          <div class="row voffset1 text-center">
+            <a class="btn btn-primary" href="index.html">Current</a>
+            <a class="btn btn-primary" href="week.html">Week</a>
+            <a class="active btn btn-primary" href="month.html">Month</a>
+            <a class="btn btn-primary" href="year.html">Year</a>
+          </div>
+          <div class="row voffset1 text-center">
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Monthly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $monthYear in $SummaryByMonth
+                <li><a href="#" data-file="$monthYear">$monthYear</a></li>
+                #end for
+              </ul>
+            </div>
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Yearly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $yr in $SummaryByYear
+                <li><a href="#" data-file="$yr">$yr</a></li>
+                #end for
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ## Include the Google Analytics code if the user has supplied an ID:
+    #if $Extras.has_key('googleAnalyticsId')
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try{
+            var pageTracker = _gat._getTracker("$Extras.googleAnalyticsId");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+    #end if
+  </body>
+</html>

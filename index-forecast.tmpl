@@ -1,0 +1,72 @@
+## Australian Index Forecast panel
+## Included in index.html.tmpl
+##
+## Depending of your location and XML file in skin.conf
+## you will need to adjust this file in a few places
+##
+#import dateutil.parser
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoFour">
+                    Forecast
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoFour">
+								## Chane to your location. YOu may also need to change the XML file being used.
+								#set $FC = $aus.NSWMETRO.forecast('area',description="Parramatta")
+                <div class="panel-body">
+									<h6><small>
+									#set $issueDateTime = $aus.NSWMETRO.amoc.issue__time__local.string
+									Forecast for Parramatta<br/>
+									Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.NSWMETRO.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
+									</small></h6>
+                  <table class="table table-condensed table-responsive">
+                    <tbody>
+										#for $fcCount in range(7)										
+												#set $fcIndex = str($fcCount)
+												#if $FC.getNode('forecast-period',index=$fcIndex) is not None
+													<tr>
+														#if $fcIndex == "0"
+															<td class="text-primary" colspan="2">
+																Forecast for the rest of $dateutil.parser.parse($FC.getNode('forecast-period',index=$fcIndex).start__time__local).strftime("%A")
+															</td>
+														#else
+															<td class="text-primary" colspan="2">
+																$dateutil.parser.parse($FC.getNode('forecast-period',index=$fcIndex).start__time__local).strftime("%A %-d %b")
+															</td>									
+														#end if
+													</tr>
+													<tr>
+														<td>
+															<img src="$aus.icons[$FC.getNode('forecast-period',index=$fcIndex).getNode('element',type="forecast_icon_code").string]" />
+														</td>
+														<td>
+															<strong>$FC.getNode('forecast-period',index=$fcIndex).text</strong>
+															#if $FC.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum") is not None
+																<br/><small>Min</small> <strong><span style="color: blue">$FC.getNode('forecast-period',index="1").getNode('element',type="air_temperature_minimum")</span></strong>
+															#else
+																<br/>
+															#end if
+															#if $FC.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum") is not None
+																<small>Max</small> <strong><span style="color: red">$FC.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
+															#end if
+														</td>
+													</tr>
+												#end if
+											#end for
+											<tr>
+												<td colspan="2" style="text-align: right">
+													<a href="forecast.html">Full Forecast</a>
+												</td>
+											</tr>
+                    </tbody>
+                  </table>
+									<h6><small>
+									#set $nextIssueDateTime = $aus.NSWMETRO.amoc.next__routine__issue__time__local.string
+									The next routine forecast will be issue at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.NSWMETRO.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
+									</small></h6>
+                </div>
+              </div>
+            </div>					

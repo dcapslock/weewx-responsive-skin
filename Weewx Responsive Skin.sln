@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0E8C6BBD-45EB-4DB4-84C2-380B051A0DB9}"
+	ProjectSection(SolutionItems) = preProject
+		favicon.ico = favicon.ico
+		forecast.html.tmpl = forecast.html.tmpl
+		index-forecast.tmpl = index-forecast.tmpl
+		index.html.tmpl = index.html.tmpl
+		month.html.tmpl = month.html.tmpl
+		skin.conf = skin.conf
+		week.html.tmpl = week.html.tmpl
+		weewx-responsive.css = weewx-responsive.css
+		year.html.tmpl = year.html.tmpl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NOAA", "NOAA", "{1C8A6B67-C421-4D81-AEE1-27436AAFCCC4}"
+	ProjectSection(SolutionItems) = preProject
+		NOAA\NOAA-YYYY-MM.txt.tmpl = NOAA\NOAA-YYYY-MM.txt.tmpl
+		NOAA\NOAA-YYYY.txt.tmpl = NOAA\NOAA-YYYY.txt.tmpl
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1C8A6B67-C421-4D81-AEE1-27436AAFCCC4} = {0E8C6BBD-45EB-4DB4-84C2-380B051A0DB9}
+	EndGlobalSection
+EndGlobal

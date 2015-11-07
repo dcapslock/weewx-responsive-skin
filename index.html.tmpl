@@ -1,0 +1,541 @@
+#errorCatcher Echo
+##
+## Specifying an encoding of UTF-8 is usually safe, but if your text is 
+## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
+#encoding UTF-8
+#import dateutil.parser
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>$station.location Weather</title>
+    <meta http-equiv="refresh" content="300">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Current weather conditions for $Extras.location_long, including daily graphs and statistics for temperature, wind and rain.">
+    <meta name="author" content="">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+    rel="stylesheet">
+    <link href="weewx-responsive.css" rel="stylesheet">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <script type='text/javascript'>//<![CDATA[ 
+      jQuery(window).load(function(){
+        jQuery('div.btn-group ul.dropdown-menu li a').on('click', function (e) {
+            var url = "NOAA/NOAA-";
+            
+            e.preventDefault(); // prevent the default anchor functionality
+            url = url + jQuery(e.target).closest('a').data('file');
+            url = url + ".txt";
+            window.open(url, '_blank');
+        });
+      });//]]>
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row panel panel-primary">
+        <div class="col-md-12 panel-heading">
+          <div class="col-md-6">
+            <h4>$station.location Weather</h4>
+          </div>
+          <div class="col-md-6 text-right">
+            <h4 class="text-right">$current.dateTime</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-push-4">
+          <div class="row panel-group" id="accordianOne">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordianOne" href="#collapseAccOneOne"
+                  draggable="true">Today's Graphs</a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccOneOne">
+                <div id="graphs" class="panel-body">
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="daytempdew.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="temperatures" />
+                  </div>
+                  #if $day.apptemp.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="dayapptemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                  </div>
+                  #end if
+                  #if $day.heatindex.has_data or $day.windchill.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="daytempchill.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="heatchill" />
+                  </div>
+                  #end if
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="dayrain.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="rain" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="daywind.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="wind" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="daybarometer.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="barometer"/>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="daywinddir.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Hi Wind" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="dayinside.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Inside" />
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="daywindvec.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Wind Vector" />
+                  </div>
+                  #if $day.radiation.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="dayradiation.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radiation" />
+                  </div>
+                  #end if
+                  #if $day.UV.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="dayuv.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="UV Index" />
+                  </div>
+                  #end if
+                  #if $day.rxCheckPercent.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="dayrx.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="day rx percent"/>
+                  </div>
+                  #end if
+                  #if $day.extraTemp1.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="daypond.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Pond Temperatures" />
+                  </div>
+                  #end if
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row col-md-4 col-md-pull-8">
+          <div class="panel-group" id="accordionTwo">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoOne">
+                    Current Conditions
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccTwoOne">
+                <div class="panel-body">
+                  <table class="table table-condensed table-responsive" style="">
+                    <tbody>
+                      <tr>
+                        <td>Outside Temperature</td>
+                        <td>$current.outTemp</td>
+                      </tr>
+                      #if $day.windchill.has_data
+                      <tr>
+                        <td>Wind Chill</td>
+                        <td>$current.windchill</td>
+                      </tr>
+                      #end if
+                      #if $day.heatindex.has_data
+                      <tr>
+                        <td>Heat Index</td>
+                        <td>$current.heatindex</td>
+                      </tr>
+                      #end if
+                      #if $day.apptemp.has_data
+                      <tr>
+                        <td>App. Temperature
+                        </td>
+                        <td>$current.apptemp ($aus.feelslike($current.apptemp.raw, $current.dateTime.raw))
+                        </td>
+                      </tr>
+                      #end if
+                      <tr>
+                        <td>Dewpoint</td>
+                        <td>$current.dewpoint</td>
+                      </tr>
+                      <tr>
+                        <td>Humidity</td>
+                        <td>$current.outHumidity</td>
+                      </tr>
+                      <tr>
+                        <td>Barometer</td>
+                        <td>$current.barometer</td>
+                      </tr>
+                      <tr>
+                        <td>Barometer Trend ($trend.time_delta.hour.format("%.0f"))</td>
+                        <td>$trend.barometer</td>
+                      </tr>
+                      <tr>
+                        <td>Wind</td>
+                        <td>$current.windSpeed from $current.windDir ($current.windDir.ordinal_compass)</td>
+                      </tr>
+                      <tr>
+                        <td>Rain Rate</td>
+                        <td>$current.rainRate</td>
+                      </tr>
+                      <tr>
+                        <td>Inside Temperature</td>
+                        <td>$current.inTemp</td>
+                      </tr>
+                      #if $day.extraTemp1.has_data
+                      <tr>
+                        <td>Pond Temperature</td>
+                        <td>$current.extraTemp1</td>
+                      </tr>
+                      #end if
+                      #if $day.UV.has_data
+                      <tr>
+                        <td>UV</td>
+                        <td>$current.UV</td>
+                      </tr>
+                      #end if
+                      #if $day.ET.has_data and $day.ET.sum.raw > 0.0
+                      <tr>
+                        <td>ET</td>
+                        <td>$current.ET</td>
+                      </tr>
+                      #end if
+                      #if $day.radiation.has_data
+                      <tr>
+                        <td>Solar Radiation</td>
+                        <td>$current.radiation</td>
+                      </tr>
+                      #end if
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoTwo">
+                    Since Midnight
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoTwo">
+                <div class="panel-body">
+                  <table class="table table-condensed table-responsive">
+                    <tbody>
+                      <tr>
+                        <td style="border-bottom: none;">High Temperature</td>
+                        <td style="border-bottom: none;">$day.outTemp.max at $day.outTemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Temperature</td>
+                        <td style="border-top: none;">$day.outTemp.min at $day.outTemp.mintime</td>
+                      </tr>
+                      #if $day.heatindex.has_data or $day.windchill.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Heat Index</td>
+                        <td style="border-bottom: none;">$day.heatindex.max at $day.heatindex.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Wind Chill</td>
+                        <td style="border-top: none;">$day.windchill.min at $day.windchill.mintime</td>
+                      </tr>
+                      #end if
+                      #if $day.apptemp.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High App. Temp.</td>
+                        <td style="border-bottom: none;">$day.apptemp.max ($aus.feelslike($day.apptemp.max.raw, $day.apptemp.maxtime.raw)) at $day.apptemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low App. Temp.</td>
+                        <td style="border-top: none;">$day.apptemp.min ($aus.feelslike($day.apptemp.min.raw, $day.apptemp.mintime.raw)) at $day.apptemp.mintime</td>
+                      </tr>
+                      #end if
+                      <tr>
+                        <td style="border-bottom: none;">High Humidity</td>
+                        <td style="border-bottom: none;">$day.outHumidity.max at $day.outHumidity.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Humidity</td>
+                        <td style="border-top: none;">$day.outHumidity.min at $day.outHumidity.mintime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Dewpoint</td>
+                        <td style="border-bottom: none;">$day.dewpoint.max at $day.dewpoint.maxtime</td>
+                      </tr>
+                      <tr>
+                         <td style="border-top: none;">Low Dewpoint</td>
+                         <td style="border-top: none;">$day.dewpoint.min at $day.dewpoint.mintime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Barometer</td>
+                        <td style="border-bottom: none;">$day.barometer.max at $day.barometer.maxtime</td>
+                      <tr>
+                      <tr>
+                        <td style="border-top: none;">Low Barometer</td>
+                        <td style="border-top: none;">$day.barometer.min at $day.barometer.mintime</td>
+                      </tr>
+                      <tr>
+                        <td>Today's Rain</td>
+                        <td>$day.rain.sum</td>
+                      </tr>
+                      <tr>
+                        <td>High Rain Rate</td>
+                        <td>$day.rainRate.max at $day.rainRate.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          High Wind
+                        </td>
+                        <td>
+                          $day.wind.max from $day.wind.gustdir ($day.wind.gustDir.ordinal_compass) at $day.wind.maxtime
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          Average Wind
+                        </td>
+                        <td>
+                          $day.wind.avg
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          RMS Wind
+                        </td>
+                        <td>
+                          $day.wind.rms
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">Vector Average Speed</td>
+                        <td style="border-bottom: none;">$day.wind.vecavg</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Vector Average Direction</td>
+                        <td style="border-top: none;">$day.wind.vecdir ($day.wind.vecdir.ordinal_compass)</td>
+                      </tr>
+                      <tr>
+                        <td style="border-bottom: none;">High Inside Temperature</td>
+                        <td style="border-bottom: none;">$day.inTemp.max at $day.inTemp.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Inside Temperature</td>
+                        <td style="border-top: none;">$day.inTemp.min at $day.inTemp.mintime</td>
+                      </tr>
+                      #if $day.extraTemp1.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Pond Temperature</td>
+                        <td style="border-bottom: none;">$day.extraTemp1.max at $day.extraTemp1.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low Pond Temperature</td>
+                        <td style="border-top: none;">$day.extraTemp1.min at $day.extraTemp1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $day.UV.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High UV</td>
+                        <td style="border-bottom: none;">Low UV</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$day.UV.max at $day.UV.maxtime</td>
+                        <td style="border-top: none;">$day.UV.min at $day.UV.mintime</td>
+                      </tr>
+                      #end if
+                      #if $day.ET.has_data and $day.ET.sum.raw >0.0
+                      <tr>
+                        <td style="border-bottom: none;">High ET</td>
+                        <td style="border-bottom: none;">Low ET</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$day.ET.max at $day.ET.maxtime<td/>
+                        <td style="border-top: none;">$day.ET.min at $day.ET.mintime</td>
+                      </tr>
+                      #end if
+                      #if $day.radiation.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High Radiation</td>
+                        <td style="border-bottom: none;">Low Radiation</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">$day.radiation.max at $day.radiation.maxtime</td>
+                        <td style="border-top: none;">$day.radiation.min at $day.radiation.mintime</td>
+                      </tr>
+                      #end if
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            #if $Extras.has_key('radar_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoThree">
+                    Radar
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoThree">
+                <div class="panel-body">
+                  <a href="$Extras.radar_url" target="_blank">
+                    <img src="$Extras.radar_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radar" />
+                  </a>
+                </div>
+              </div>
+            </div>
+            #end if
+			## Comment out below to not include Australian Forecast Panel
+			## See index-forecast.tmpl for more information
+			##include "index-forecast.tmpl"
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoFive">
+                    About
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoFive">
+                <div class="panel-body">
+                  <table class="table table-condensed table-responsive">
+                    <thead>
+                      <tr>
+                        <th colspan="2">
+                          <h4 class="text-center">Location</h4>
+                        </th>
+                      </tr >
+                    </thead>
+                    <tbody>
+					<tr>
+                        <td colspan="2">
+                          <h5 class="text-center">
+						  #if $Extras.has_key('location_long')
+						    $Extras.location_long
+						  #else
+						    $station.location
+						  #end if
+						  </h5>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <h5 class="text-right">Latitude:</h5>
+                        </td>
+                        <td>
+                          <h5 class="text-left">$station.latitude[0]&deg; $station.latitude[1]' $station.latitude[2]</h5>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <h5 class="text-right">Longitude:</h5>
+                        </td>
+                        <td>
+                          <h5 class="text-left">$station.longitude[0]&deg; $station.longitude[1]' $station.longitude[2]</h5>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <h5 class="text-right">Elevation:</h5>
+                        </td>
+                        <td>
+                          <h5 class="text-left">$station.altitude</h5>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p class="text-center">
+                    This station uses a $station.hardware, controlled by <a href="http://www.weewx.com">'weewx'</a>, an experimental
+                    weather software system written in Python. Weewx was designed to be simple,
+                    fast, and easy to understand by leveraging modern software concepts.
+                  </p>
+                  <p class="text-center">
+                    Weewx uptime:  $station.uptime<br/>
+                    Server uptime: $station.os_uptime<br/>
+                    weewx v$station.version
+                  </p>
+					#if $Extras.has_key('contact_email')
+						<p class="text-center">Email: <a href="mailto:$Extras.contact_email">$Extras.contact_email</a></p>
+					#end if
+					<p class="text-center">This website uses <a href="http://glyphicons.com/" target="_blank">Glyphicons</a> Halflings icon set as part of the Bootstrap framework</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="panel panel-primary col-xs-12 col-sm-12 col-md-12">
+          <div class="row voffset1 text-center">
+            <a class="active btn btn-primary" href="index.html">Current</a>
+            <a class="btn btn-primary" href="week.html">Week</a>
+            <a class="btn btn-primary" href="month.html">Month</a>
+            <a class="btn btn-primary" href="year.html">Year</a>
+          </div>
+          <div class="row voffset1 text-center">
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Monthly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $monthYear in $SummaryByMonth
+                <li><a href="#" data-file="$monthYear">$monthYear</a></li>
+                #end for
+              </ul>
+            </div>
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Yearly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $yr in $SummaryByYear
+                <li><a href="#" data-file="$yr">$yr</a></li>
+                #end for
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ## Include the Google Analytics code if the user has supplied an ID:
+    #if $Extras.has_key('googleAnalyticsId')
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try{
+            var pageTracker = _gat._getTracker("$Extras.googleAnalyticsId");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+    #end if
+	<script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Article",
+      "Headline" : "$Extras.location_long Weather",
+      "datePublished" : "$current.dateTime.format("%Y-%m-%dT%H:%M:%S")$Extras.ISO8061_delta",
+      "image" : "$station.station_url/daytempdew.png",
+	  #if $day.apptemp.has_data
+      "articleSection" : "Current Conditions: Outside Temperature $current.outTemp App. Temperature $current.apptemp ($aus.feelslike($current.apptemp.raw, $current.dateTime.raw)) Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
+	  #else
+	  "articleSection" : "Current Conditions: Outside Temperature $current.outTemp Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
+	  #end if
+    }
+    </script>
+	<script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "WebSite",
+      "name" : "$Extras.location_long Weather",
+      "alternateName" : "Current $Extras.location_long Weather",
+      "url" : "$station.station_url"
+    }
+    </script>
+  </body>
+</html>
