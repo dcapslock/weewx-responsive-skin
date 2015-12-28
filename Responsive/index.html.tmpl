@@ -1,4 +1,4 @@
-#errorCatcher Echo
+﻿#errorCatcher Echo
 ##
 ## Specifying an encoding of UTF-8 is usually safe, but if your text is 
 ## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
@@ -381,6 +381,26 @@
                   <a href="$Extras.radar_url" target="_blank">
                     <img src="$Extras.radar_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radar" />
                   </a>
+                    <p class="text-center">Click on the image above for an hourly animation</p>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('satellite_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoFour">
+                    Satellite
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoFour">
+                <div class="panel-body">
+                  <a href="$Extras.satellite_url" target="_blank">
+                    <img src="$Extras.satellite_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Satellite" />
+                  </a>
+                  <p class="text-center">Click on the image above for a daily animation</p>
                 </div>
               </div>
             </div>
