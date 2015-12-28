@@ -39,3 +39,8 @@ ul.text-center { text-align: center; }
 }
 
 .extra-vertical-padding { padding-top: 8px; padding-bottom: 8px; }
+
+.col-min-padding {
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+}

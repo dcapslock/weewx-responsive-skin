@@ -34,7 +34,7 @@
     </script>
   </head>
   <body>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row panel panel-primary">
         <div class="col-md-12 panel-heading">
           <div class="col-md-6">
@@ -46,15 +46,15 @@
         </div>
       </div>
     </div>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
-        <div class="col-md-8 col-md-push-4">
+        <div class="col-md-8 col-md-push-4 col-lg-6 col-lg-push-3">
           <div class="row panel-group" id="accordianOne">
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordianOne" href="#collapseAccOneOne"
-                  draggable="true">Today's Graphs</a>
+                     draggable="true">Today's Graphs</a>
                 </h4>
               </div>
               <div class="panel-collapse collapse in" id="collapseAccOneOne">
@@ -79,7 +79,7 @@
                     <img src="daywind.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="wind" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="daybarometer.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="barometer"/>
+                    <img src="daybarometer.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="barometer" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <img src="daywinddir.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Hi Wind" />
@@ -102,7 +102,7 @@
                   #end if
                   #if $day.rxCheckPercent.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="dayrx.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="day rx percent"/>
+                    <img src="dayrx.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="day rx percent" />
                   </div>
                   #end if
                   #if $day.extraTemp1.has_data
@@ -115,7 +115,7 @@
             </div>
           </div>
         </div>
-        <div class="row col-md-4 col-md-pull-8">
+        <div class="col-md-4 col-md-pull-8 col-lg-3 col-lg-pull-6 col-min-padding">
           <div class="panel-group" id="accordionTwo">
             <div class="panel panel-primary">
               <div class="panel-heading">
@@ -147,9 +147,11 @@
                       #end if
                       #if $day.apptemp.has_data
                       <tr>
-                        <td>App. Temperature
+                        <td>
+                          App. Temperature
                         </td>
-                        <td>$current.apptemp ($aus.feelslike($current.apptemp.raw, $current.dateTime.raw))
+                        <td>
+                          $current.apptemp ($aus.feelslike($current.apptemp.raw, $current.dateTime.raw))
                         </td>
                       </tr>
                       #end if
@@ -263,8 +265,8 @@
                         <td style="border-bottom: none;">$day.dewpoint.max at $day.dewpoint.maxtime</td>
                       </tr>
                       <tr>
-                         <td style="border-top: none;">Low Dewpoint</td>
-                         <td style="border-top: none;">$day.dewpoint.min at $day.dewpoint.mintime</td>
+                        <td style="border-top: none;">Low Dewpoint</td>
+                        <td style="border-top: none;">$day.dewpoint.min at $day.dewpoint.mintime</td>
                       </tr>
                       <tr>
                         <td style="border-bottom: none;">High Barometer</td>
@@ -348,7 +350,8 @@
                         <td style="border-bottom: none;">Low ET</td>
                       </tr>
                       <tr>
-                        <td style="border-top: none;">$day.ET.max at $day.ET.maxtime<td/>
+                        <td style="border-top: none;">$day.ET.max at $day.ET.maxtime
+                        <td />
                         <td style="border-top: none;">$day.ET.min at $day.ET.mintime</td>
                       </tr>
                       #end if
@@ -368,7 +371,7 @@
               </div>
             </div>
             #if $Extras.has_key('radar_img')
-            <div class="panel panel-primary">
+            <div class="hidden-lg panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoThree">
@@ -381,13 +384,13 @@
                   <a href="$Extras.radar_url" target="_blank">
                     <img src="$Extras.radar_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radar" />
                   </a>
-                    <p class="text-center">Click on the image above for an hourly animation</p>
+                  <p class="text-center">Click on the image above for an hourly animation</p>
                 </div>
               </div>
             </div>
             #end if
             #if $Extras.has_key('satellite_img')
-            <div class="panel panel-primary">
+            <div class="hidden-lg panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoFour">
@@ -405,10 +408,10 @@
               </div>
             </div>
             #end if
-			## Comment out below to not include Australian Forecast Panel
-			## See index-forecast.tmpl for more information
+            ## Comment out below to not include Australian Forecast Panel
+            ## See index-forecast.tmpl for more information
             ## Forecast Accordian is collapseAccTwoFive
-			#include "index-forecast.tmpl"
+            #include "index-forecast.tmpl"
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
@@ -425,18 +428,18 @@
                         <th colspan="2">
                           <h4 class="text-center">Location</h4>
                         </th>
-                      </tr >
+                      </tr>
                     </thead>
                     <tbody>
-					<tr>
+                      <tr>
                         <td colspan="2">
                           <h5 class="text-center">
-						  #if $Extras.has_key('location_long')
-						    $Extras.location_long
-						  #else
-						    $station.location
-						  #end if
-						  </h5>
+                            #if $Extras.has_key('location_long')
+                            $Extras.location_long
+                            #else
+                            $station.location
+                            #end if
+                          </h5>
                         </td>
                       </tr>
                       <tr>
@@ -471,22 +474,60 @@
                     fast, and easy to understand by leveraging modern software concepts.
                   </p>
                   <p class="text-center">
-                    Weewx uptime:  $station.uptime<br/>
-                    Server uptime: $station.os_uptime<br/>
+                    Weewx uptime:  $station.uptime<br />
+                    Server uptime: $station.os_uptime<br />
                     weewx v$station.version
                   </p>
-					#if $Extras.has_key('contact_email')
-						<p class="text-center">Email: <a href="mailto:$Extras.contact_email">$Extras.contact_email</a></p>
-					#end if
-					<p class="text-center">This website uses <a href="http://glyphicons.com/" target="_blank">Glyphicons</a> Halflings icon set as part of the Bootstrap framework</p>
+                  #if $Extras.has_key('contact_email')
+                  <p class="text-center">Email: <a href="mailto:$Extras.contact_email">$Extras.contact_email</a></p>
+                  #end if
+                  <p class="text-center">This website uses <a href="http://glyphicons.com/" target="_blank">Glyphicons</a> Halflings icon set as part of the Bootstrap framework</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <div class="hidden-xs hidden-sm hidden-md col-lg-3 col-min-padding">
+          <div class="panel-group">
+            #if $Extras.has_key('radar_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  Radar
+                </h4>
+              </div>
+              <div class="panel">
+                <div class="panel-body">
+                  <a href="$Extras.radar_url" target="_blank">
+                    <img src="$Extras.radar_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radar" />
+                  </a>
+                  <p class="text-center">Click on the image above for an hourly animation</p>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('satellite_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  Satellite
+                </h4>
+              </div>
+              <div class="panel">
+                <div class="panel-body">
+                  <a href="$Extras.satellite_url" target="_blank">
+                    <img src="$Extras.satellite_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Satellite" />
+                  </a>
+                  <p class="text-center">Click on the image above for a daily animation</p>
+                </div>
+              </div>
+            </div>
+            #end if
+          </div>
+        </div>
       </div>
     </div>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
         <div class="panel panel-primary col-xs-12 col-sm-12 col-md-12">
           <div class="row voffset1 text-center">
@@ -525,38 +566,38 @@
     ## Include the Google Analytics code if the user has supplied an ID:
     #if $Extras.has_key('googleAnalyticsId')
     <script type="text/javascript">
-        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
     </script>
     <script type="text/javascript">
-        try{
-            var pageTracker = _gat._getTracker("$Extras.googleAnalyticsId");
-            pageTracker._trackPageview();
-        } catch(err) {}
+      try {
+        var pageTracker = _gat._getTracker("$Extras.googleAnalyticsId");
+        pageTracker._trackPageview();
+      } catch (err) { }
     </script>
     #end if
-	<script type="application/ld+json">
-    {
+    <script type="application/ld+json">
+      {
       "@context" : "http://schema.org",
       "@type" : "Article",
       "Headline" : "$Extras.location_long Weather",
       "datePublished" : "$current.dateTime.format("%Y-%m-%dT%H:%M:%S")$Extras.ISO8061_delta",
       "image" : "$station.station_url/daytempdew.png",
-	  #if $day.apptemp.has_data
+      #if $day.apptemp.has_data
       "articleSection" : "Current Conditions: Outside Temperature $current.outTemp App. Temperature $current.apptemp ($aus.feelslike($current.apptemp.raw, $current.dateTime.raw)) Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
-	  #else
-	  "articleSection" : "Current Conditions: Outside Temperature $current.outTemp Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
-	  #end if
-    }
+      #else
+      "articleSection" : "Current Conditions: Outside Temperature $current.outTemp Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
+      #end if
+      }
     </script>
-	<script type="application/ld+json">
-    {
+    <script type="application/ld+json">
+      {
       "@context" : "http://schema.org",
       "@type" : "WebSite",
       "name" : "$Extras.location_long Weather",
       "alternateName" : "Current $Extras.location_long Weather",
       "url" : "$station.station_url"
-    }
+      }
     </script>
   </body>
 </html>
