@@ -1,4 +1,4 @@
-#errorCatcher Echo
+﻿#errorCatcher Echo
 ##
 ## Specifying an encoding of UTF-8 is usually safe, but if your text is 
 ## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
@@ -63,81 +63,81 @@
                 </h4>
               </div>
               <div class="panel-collapse collapse in" id="collapseAccOneOne">
-								<div class="container">
-									<div class="row">
-										<div class="col-md-8">
-											<h6><small>
-											#set $issueDateTime = $aus.SYDNEY.amoc.issue__time__local.string
-											#set $FCP = $aus.NSWMETRO.forecast('area',description="Parramatta")
-											#set $FCSL = $aus.SYDNEY.forecast.getNode('area', description="Sydney", type="location")
-											#set $FCSM = $aus.SYDNEY.forecast.getNode('area', description="Sydney", type="metropolitan")
-											Forecast for Parramatta and Sydney area. Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.SYDNEY.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
-											</small></h6>
-											#for $fcCount in range(7)										
-												#set $fcIndex = str($fcCount)
-												#if $FCP.getNode('forecast-period', index=$fcIndex) is not None
-													<div class="row">
+				        <div class="panel-body">
+				          <div class="row">
+									  <div class="col-md-8">
+										  <h6><small>
+										  #set $issueDateTime = $aus.SYDNEY.amoc.issue__time__local.string
+										  #set $FCP = $aus.NSWMETRO.forecast('area',description="Parramatta")
+										  #set $FCSL = $aus.SYDNEY.forecast.getNode('area', description="Sydney", type="location")
+										  #set $FCSM = $aus.SYDNEY.forecast.getNode('area', description="Sydney", type="metropolitan")
+										  Forecast for Parramatta and Sydney area. Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.SYDNEY.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
+										  </small></h6>
+										  #for $fcCount in range(7)										
+											  #set $fcIndex = str($fcCount)
+											  #if $FCP.getNode('forecast-period', index=$fcIndex) is not None
+								  			  <div class="row">
 														<div class="col-xs-12">
 														#if $fcIndex == "0"
 															<div class="border-top-thick2 border-bottom-dotted text-primary">
 																Forecast for rest of $dateutil.parser.parse($FCSM.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A")
 															</div>
 														#else
-															<div class="border-top-thick border-bottom-dotted text-primary">
-																$dateutil.parser.parse($FCSL.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A %-d %b")
+														  <div class="border-top-thick border-bottom-dotted text-primary">
+														    $dateutil.parser.parse($FCSL.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A %-d %b")
 															</div>
 														#end if
 														</div>
 													</div>
 													<div class="row">
-														<div class="col-xs-12 col-sm-6 col-md-6">
-															<div class="extra-vertical-padding">
-																<div class="row">
-																	<div class="col-xs-3">
-																		<img src="$aus.icons[$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="forecast_icon_code").string]" />
-																	</div>
-																	<div class="col-xs-9">
-																		#if $FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum") is not None
-																		<small>Min</small> <strong><span style="color: blue">$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-																		#end if
-																		#if $FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum") is not None
-																		<small>Max</small> <strong><span style="color: red">$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong><br/>
-																		#end if
-																		<strong>$FCP.getNode('forecast-period',index=$fcIndex).text</strong>
-																		#if $FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation") is not None																
-																			<div class="border-top-dotted">
-																				<small>Chance of any rain: </small><span style="color: green"><strong>$FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string</strong></span>
-																				<img style="vertical-align: baseline;" src="$aus.rainImgs[$FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string]" />
-																			</div>
-																			#if $FCSL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range") is not None	
-																				<div class="border-top-dotted">
-																					<small>Rainfall amount: </small><span style="color: green"><strong>$FCSL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range").string</strong></span>
-																				</div>
-																			#end if 
-																		#end if
-																	</div>
-																</div>
-															</div>
+													  <div class="col-xs-12 col-sm-6 col-md-6">
+														  <div class="extra-vertical-padding">
+														 	  <div class="row">
+																  <div class="col-xs-3">
+																	  <img src="$aus.icons[$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="forecast_icon_code").string]" />
+																  </div>
+																  <div class="col-xs-9">
+																	  #if $FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum") is not None
+																	  <small>Min</small> <strong><span style="color: blue">$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
+																	  #end if
+																	  #if $FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum") is not None
+																	  <small>Max</small> <strong><span style="color: red">$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong><br/>
+																	  #end if
+																	  <strong>$FCP.getNode('forecast-period',index=$fcIndex).text</strong>
+																	  #if $FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation") is not None																
+																		  <div class="border-top-dotted">
+																			  <small>Chance of any rain: </small><span style="color: green"><strong>$FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string</strong></span>
+																			  <img style="vertical-align: baseline;" src="$aus.rainImgs[$FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string]" />
+																		  </div>
+																		  #if $FCSL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range") is not None	
+																			  <div class="border-top-dotted">
+																				  <small>Rainfall amount: </small><span style="color: green"><strong>$FCSL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range").string</strong></span>
+																			  </div>
+																		  #end if 
+																	  #end if
+																  </div>
+															  </div>
+														  </div>
 														</div>
 														<div class="col-xs-12 col-sm-6 col-md-6">
-															<div class="extra-vertical-padding">
-																<div class="row">
-																	<div class="col-xs-12">
-																		<strong>Sydney area</strong><br />
-																		$FCSM.getNode('forecast-period', index=$fcIndex).getNode('text',type="forecast").string
-																	</div>
-																</div>
+														  <div class="extra-vertical-padding">
+															  <div class="row">
+																  <div class="col-xs-12">
+																	  <strong>Sydney area</strong><br />
+																	  $FCSM.getNode('forecast-period', index=$fcIndex).getNode('text',type="forecast").string
+																  </div>
+															  </div>
 															</div>
 														</div>
 													</div>
 												#end if
 											#end for	
-											<h6>
-											<small>
-											#set $nextIssueDateTime = $aus.NSWMETRO.amoc.next__routine__issue__time__local.string
-											The next routine forecast will be issued at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.NSWMETRO.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
-											</small>
-											</h6>
+										  <h6>
+										  <small>
+										  #set $nextIssueDateTime = $aus.NSWMETRO.amoc.next__routine__issue__time__local.string
+										  The next routine forecast will be issued at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.NSWMETRO.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
+										  </small>
+										  </h6>
 										</div>
 									</div>
 								</div>
