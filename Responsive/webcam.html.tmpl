@@ -1,0 +1,231 @@
+﻿#errorCatcher Echo
+##
+## Specifying an encoding of UTF-8 is usually safe, but if your text is 
+## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
+#encoding UTF-8
+#from datetime import datetime
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>$station.location Weather - Webcam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Weather Webcam for Carlingford, NSW, Australia.">
+    <meta name="author" content="">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+    rel="stylesheet">
+    <link href="weewx-responsive.css" rel="stylesheet">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="JS/url.min.js"></script>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    #raw
+    <script type='text/javascript'>  //<![CDATA[
+      var currentRoot = "/WEBCAM"
+
+      $(window).load(function () {
+        if ($.url('?data-src'))
+        {
+          setVideo($.url('?data-src'));
+        }
+      });
+
+      function setVideoID(identifier) {
+        setVideo($(identifier).data('src'));
+      }
+
+      function setVideo(src) {
+        $('#videoContainer')[0].pause();
+        $('#videoSource').attr('src', currentRoot + "/" + src);
+        $('#videoContainer')[0].load();
+        $('#accordianOne').scrollView();
+        $('#videoContainer')[0].play();
+      }
+
+      $.fn.scrollView = function () {
+        return this.each(function () {
+          $('html, body').animate({
+            scrollTop: $(this).offset().top
+          }, 250);
+        });
+      }
+      //]]>
+    </script>
+    #end raw
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row panel panel-primary">
+        <div class="col-md-12 panel-heading">
+          <div class="col-md-6">
+            <h4><a href="/"><span class="glyphicon glyphicon-home" style="color: white"></span></a>&nbsp;&nbsp;$station.location Weather - Webcam</h4>
+          </div>
+          <div class="col-md-6 text-right">
+            <h4 class="text-right">$current.dateTime</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-8 col-md-push-4">
+          <div class="row panel-group" id="accordianOne">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordianOne" href="#collapseAccOneOne"
+                     draggable="true">Animation</a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccOneOne">
+                <div class="panel-body text-center">
+                  <div class="embed-responsive embed-responsive-4by3">
+                    <video id="videoContainer" controls class="embed-responsive-item">
+                      <source id="videoSource" src="/WEBCAM/1-hour.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-md-pull-8 col-min-padding">
+          <div class="panel-group" id="accordionTwo">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoOne">
+                    Today
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccTwoOne">
+                <div class="panel-body">
+                  <img src="$Extras.webcam_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Latest Webcam Image" />
+                  <table class="table table-condensed table-responsive">
+                    <tbody>
+                      <tr>
+                        <td colspan="3">
+                          <h5>Latest Animations</h5>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span data-src="1-hour.mp4" onclick="setVideoID(this);" class="video-src">Last Hour</span>
+                        </td>
+                        <td>
+                          <span data-src="day.mp4" onclick="setVideoID(this);" class="video-src">From Sunrise</span>
+                        </td>
+                        <td>
+                          &nbsp;
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="3">
+                          <h5>Hourly</h5>
+                        </td>
+                      </tr>
+                      <tr>
+                        #set $nowHour = $datetime.now().hour
+                        #for $i in range(0, $nowHour)
+                        #set $tZero = datetime($datetime.now().year, $datetime.now().month, $datetime.now().day, $i, 1)
+                        #set $tOne = datetime($datetime.now().year, $datetime.now().month, $datetime.now().day, $i+1, 00)
+                        #set $file = $tZero.strftime("1-hour_%Y_%m_%d__%H.mp4")
+                        <td>
+                          <span data-src="hourly/$file" onclick="setVideoID(this);" class="video-src">$tZero.strftime("%H:%M")-$tOne.strftime("%H:%M")</span>
+                        </td>
+                        #if (($i % 3) == 2)
+                        </tr>
+                        <tr>
+                        #end if
+                        #end for
+                      </tr>
+                    </tbody>
+                  </table>
+                 </div>
+              </div>
+            </div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoTwo">
+                    Archive
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoTwo">
+                <div class="panel-body">
+                  <span class="glyphicon glyphicon-warning-sign">&nbsp;&nbsp;UNDER CONSTRUCTION</span>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoThree">
+                    About Webcam
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoThree">
+                <div class="panel-body">
+                  <span class="glyphicon glyphicon-warning-sign">&nbsp;&nbsp;UNDER CONSTRUCTION</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="panel panel-primary col-xs-12 col-sm-12 col-md-12">
+          <div class="row voffset1 text-center">
+            <a class="btn btn-primary" href="index.html">Current</a>
+            <a class="btn btn-primary" href="week.html">Week</a>
+            <a class="btn btn-primary" href="month.html">Month</a>
+            <a class="btn btn-primary" href="year.html">Year</a>
+          </div>
+          <div class="row voffset1 text-center">
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Monthly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $monthYear in $SummaryByMonth
+                <li><a href="#" data-file="$monthYear">$monthYear</a></li>
+                #end for
+              </ul>
+            </div>
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Yearly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $yr in $SummaryByYear
+                <li><a href="#" data-file="$yr">$yr</a></li>
+                #end for
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ## Include the Google Analytics code if the user has supplied an ID:
+    #if $Extras.has_key('googleAnalyticsId')
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try{
+            var pageTracker = _gat._getTracker("$Extras.googleAnalyticsId");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+    #end if
+  </body>
+</html>

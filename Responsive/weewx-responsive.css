@@ -9,6 +9,15 @@
 
 #graphs > .col-md-6 {padding-left: 2px; padding-right: 2px;}
 
+.video-src { color:#337CBB; }
+.video-src:hover { cursor:pointer; color:#0D5695; }
+.video-src:before { 		
+        font-family: 'Glyphicons Halflings';
+		content: "\e009";
+		float: left;
+        padding-right: 1em;
+}
+
 .panel-heading a:focus { text-decoration: none; outline: none; }	
 .panel-heading .accordian-toggle:after {
 		font-family: 'Glyphicons Halflings';

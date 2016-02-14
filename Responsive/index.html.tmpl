@@ -412,15 +412,34 @@
             ## See index-forecast.tmpl for more information
             ## Forecast Accordian is collapseAccTwoFive
             #include "index-forecast.tmpl"
+            #if $Extras.has_key('webcam_img')
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoSix">
-                    About
+                    Webcam
                   </a>
                 </h4>
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoSix">
+                <div class="panel-body">
+                  <a href="$Extras.webcam_url">
+                    <img src="$Extras.webcam_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Webcam" />
+                  </a>
+                  <p class="text-center">Click on the image above for the Webcam page</p>
+                </div>
+              </div>
+            </div>
+            #end if
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoSeven">
+                    About
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoSeven">
                 <div class="panel-body">
                   <table class="table table-condensed table-responsive">
                     <thead>
