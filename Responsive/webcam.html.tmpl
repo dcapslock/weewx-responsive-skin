@@ -113,11 +113,18 @@
                         <td>
                           <span data-src="1-hour.mp4" onclick="setVideoID(this);" class="video-src">Last Hour</span>
                         </td>
+                        #set $nowHour = $datetime.now().hour
+                        #if $nowHour > 9
                         <td>
                           <span data-src="day.mp4" onclick="setVideoID(this);" class="video-src">From Sunrise</span>
                         </td>
                         <td>
                           &nbsp;
+                        </td>
+                        #else
+                        <td colspan="2">
+                          From Sunrise available after 9:00am
+                          #end if
                         </td>
                       </tr>
                       <tr>
@@ -126,7 +133,6 @@
                         </td>
                       </tr>
                       <tr>
-                        #set $nowHour = $datetime.now().hour
                         #for $i in range(0, $nowHour)
                         #set $tZero = datetime($datetime.now().year, $datetime.now().month, $datetime.now().day, $i, 1)
                         #set $tOne = datetime($datetime.now().year, $datetime.now().month, $datetime.now().day, $i+1, 00)
