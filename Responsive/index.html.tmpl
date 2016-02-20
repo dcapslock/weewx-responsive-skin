@@ -412,16 +412,59 @@
             ## See index-forecast.tmpl for more information
             ## Forecast Accordian is collapseAccTwoFive
             #include "index-forecast.tmpl"
-            #if $Extras.has_key('webcam_img')
+            #if $Extras.has_key('use_warn')
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoSix">
-                    Webcam
+                    Warnings
                   </a>
                 </h4>
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoSix">
+                <div class="panel-body">
+                  <h6><small>$aus.NSWWARNINGS.channel.title</small></h6>
+                  <table class="table table-condensed table-responsive">
+                    <tbody>
+                      <tr>
+                        <td class="text-primary">Current Warnings</td>
+                      </tr>
+                      #if $aus.NSWWARNINGS.channel.getNode('item[1]') is None
+                      <tr>
+                        <td>
+                          None
+                        </td>
+                      </tr>
+                      #end if
+                      ## Assume there would be no more than 20 concurrent warnings
+                      ## Not using While in case XML breaks in some way and we get stuck in a loop
+                      #for $wnCount in range(1,21)
+                      #set $wnIndex = '[' + str($wnCount) +']'
+                      #if $aus.NSWWARNINGS.channel.getNode('item'+$wnIndex) is None
+                      #break
+                      #end if
+                      <tr>
+                        <td>
+                          <a href="$aus.NSWWARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.NSWWARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                        </td>
+                      </tr>
+                      #end for
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('webcam_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoSeven">
+                    Webcam
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoSeven">
                 <div class="panel-body">
                   <a href="$Extras.webcam_url">
                     <img src="$Extras.webcam_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Webcam" />
@@ -434,12 +477,12 @@
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
-                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoSeven">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoEight">
                     About
                   </a>
                 </h4>
               </div>
-              <div class="panel-collapse collapse" id="collapseAccTwoSeven">
+              <div class="panel-collapse collapse" id="collapseAccTwoEight">
                 <div class="panel-body">
                   <table class="table table-condensed table-responsive">
                     <thead>
