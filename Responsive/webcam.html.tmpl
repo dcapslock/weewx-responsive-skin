@@ -12,11 +12,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Weather Webcam for Carlingford, NSW, Australia.">
     <meta name="author" content="">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-    rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <link href="weewx-responsive.css" rel="stylesheet">
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/locale/en-au.js"></script> 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js "></script>    
+     
 		<script type="text/javascript" src="JS/url.min.js"></script>
     <link rel="icon" type="image/png" href="favicon.ico">
     #raw
@@ -124,8 +128,8 @@
                         #else
                         <td colspan="2">
                           From Sunrise available after 9:00am
-                          #end if
                         </td>
+                        #end if
                       </tr>
                       <tr>
                         <td colspan="3">
@@ -161,9 +165,69 @@
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoTwo">
                 <div class="panel-body">
-                  <span class="glyphicon glyphicon-warning-sign">&nbsp;&nbsp;UNDER CONSTRUCTION</span>
+                  <div class="form-group">
+                    <div class='input-group date' id='datetimepicker1'>
+                      <input type='text' class="form-control" />
+                      <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                    </div>
+                  </div>
+                  <table class="table table-condensed table-responsive">
+                    <tbody>
+                      <tr>
+                        <td colspan="3">
+                          <h5 id="archiveTitle"></h5>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="3" id="archiveDaily"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <table class="table table-condensed table-responsive">
+                    <tbody id="archiveHourly">
+                    </tbody>
+                  </table>
                 </div>
               </div>
+              #raw
+              <script type="text/javascript">
+                $(function () {
+                  $('#datetimepicker1').datetimepicker({
+                    locale: "en-au",
+                    defaultDate: moment().subtract(1, 'days'),
+                    format: "DD/MM/YYYY",
+                    minDate: moment("2016-01-16"),
+                    maxDate: moment()
+                  });
+                  $('#datetimepicker1').on("dp.change", function (e) {
+                    setArchiveDate(e.date);
+                  });
+                  setArchiveDate(moment().subtract(1, 'days'));
+                });
+
+                function setArchiveDate(date) {
+                  $("#archiveTitle").html(date.format("ddd, Do MMM YYYY") + ' - Daily');
+                  $.get("WEBCAM/daily.aspx?" + date.format("YYYY-MM-DD"), function (data) {
+                    $("#archiveDaily").html('<span data-src="daily/' + data.videos[0].fileName + '" onclick="setVideoID(this);" class="video-src">Sunrise to Sunset</span>');
+                  });
+                  $.get("WEBCAM/hourly.aspx?" + date.format("YYYY-MM-DD"), function (data) {
+                    var hourlyHTML =  '<tr><td colspan="3"><h5>' + date.format("ddd, Do MMM YYYY") + ' - Hourly</h5></td></tr>';
+                    
+                    hourlyHTML += '<tr>';
+                    $.each(data.videos, function (index, value) {
+                      hourlyHTML += '<td><span data-src="hourly/' + value.fileName + '" onclick="setVideoID(this);" class="video-src">' + moment(value.lastWrite).subtract(1, 'hours').format("HH:01") + '-' + moment(value.lastWrite).format("HH:00") + '</span></td>';
+                      if (index % 3 == 2) {
+                        hourlyHTML += '</tr><tr>';
+                      }
+                    });
+                    hourlyHTML += '</tr>';
+                    $("#archiveHourly").html(hourlyHTML);
+                  });
+                }
+              </script>
+              #end raw
             </div>
             <div class="panel panel-primary">
               <div class="panel-heading">
