@@ -1,4 +1,4 @@
-#errorCatcher Echo
+﻿#errorCatcher Echo
 ##
 ## Specifying an encoding of UTF-8 is usually safe, but if your text is 
 ## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
@@ -59,9 +59,9 @@
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <img src="yeartempdew.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="temperatures" />
                   </div>
-                  #if $year.apptemp.has_data
+                  #if $year.appTemp.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="yearapptemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                    <img src="yearappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
                   </div>
                   #end if
                   #if $year.heatindex.has_data or $year.windchill.has_data
@@ -144,14 +144,14 @@
                         <td style="border-top: none;">$year.windchill.min at $year.windchill.mintime</td>
                       </tr>
                       #end if
-                      #if $year.apptemp.has_data
+                      #if $year.appTemp.has_data
                       <tr>
                         <td style="border-bottom: none;">High App. Temp.</td>
-                        <td style="border-bottom: none;">$year.apptemp.max ($aus.feelslike($year.apptemp.max.raw, $year.apptemp.maxtime.raw)) at $year.apptemp.maxtime</td>
+                        <td style="border-bottom: none;">$year.appTemp.max ($aus.feelslike($year.appTemp.max.raw, $year.appTemp.maxtime.raw)) at $year.appTemp.maxtime</td>
                       </tr>
                       <tr>
                         <td style="border-top: none;">Low App. Temp.</td>
-                        <td style="border-top: none;">$year.apptemp.min ($aus.feelslike($year.apptemp.min.raw, $year.apptemp.mintime.raw)) at $year.apptemp.mintime</td>
+                        <td style="border-top: none;">$year.appTemp.min ($aus.feelslike($year.appTemp.min.raw, $year.appTemp.mintime.raw)) at $year.appTemp.mintime</td>
                       </tr>
                       #end if
                       <tr>

@@ -59,9 +59,9 @@
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <img src="weektempdew.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="temperatures" />
                   </div>
-                  #if $week.apptemp.has_data
+                  #if $week.appTemp.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="weekapptemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                    <img src="weekappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
                   </div>
                   #end if
                   #if $week.heatindex.has_data or $week.windchill.has_data
@@ -144,14 +144,14 @@
                         <td style="border-top: none;">$week.windchill.min at $week.windchill.mintime</td>
                       </tr>
                       #end if
-                      #if $week.apptemp.has_data
+                      #if $week.appTemp.has_data
                       <tr>
                         <td style="border-bottom: none;">High App. Temp.</td>
-                        <td style="border-bottom: none;">$week.apptemp.max ($aus.feelslike($week.apptemp.max.raw, $week.apptemp.maxtime.raw)) at $week.apptemp.maxtime</td>
+                        <td style="border-bottom: none;">$week.appTemp.max ($aus.feelslike($week.appTemp.max.raw, $week.appTemp.maxtime.raw)) at $week.appTemp.maxtime</td>
                       </tr>
                       <tr>
                         <td style="border-top: none;">Low App. Temp.</td>
-                        <td style="border-top: none;">$week.apptemp.min ($aus.feelslike($week.apptemp.min.raw, $week.apptemp.mintime.raw)) at $week.apptemp.mintime</td>
+                        <td style="border-top: none;">$week.appTemp.min ($aus.feelslike($week.appTemp.min.raw, $week.appTemp.mintime.raw)) at $week.appTemp.mintime</td>
                       </tr>
                       #end if
                       <tr>
@@ -301,14 +301,14 @@
                         <td style="border-top: none;">$month.windchill.min at $month.windchill.mintime</td>
                       </tr>
                       #end if
-                      #if $month.apptemp.has_data
+                      #if $month.appTemp.has_data
                       <tr>
                         <td style="border-bottom: none;">High App. Temp.</td>
-                        <td style="border-bottom: none;">$month.apptemp.max ($aus.feelslike($month.apptemp.max.raw, $month.apptemp.maxtime.raw)) at $month.apptemp.maxtime</td>
+                        <td style="border-bottom: none;">$month.appTemp.max ($aus.feelslike($month.appTemp.max.raw, $month.appTemp.maxtime.raw)) at $month.appTemp.maxtime</td>
                       </tr>
                       <tr>
                         <td style="border-top: none;">Low App. Temp.</td>
-                        <td style="border-top: none;">$month.apptemp.min ($aus.feelslike($month.apptemp.min.raw, $month.apptemp.mintime.raw)) at $month.apptemp.mintime</td>
+                        <td style="border-top: none;">$month.appTemp.min ($aus.feelslike($month.appTemp.min.raw, $month.appTemp.mintime.raw)) at $month.appTemp.mintime</td>
                       </tr>
                       #end if
                       <tr>

@@ -62,9 +62,9 @@
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <img src="daytempdew.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="temperatures" />
                   </div>
-                  #if $day.apptemp.has_data
+                  #if $day.appTemp.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="dayapptemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                    <img src="dayappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
                   </div>
                   #end if
                   #if $day.heatindex.has_data or $day.windchill.has_data
@@ -145,13 +145,13 @@
                         <td>$current.heatindex</td>
                       </tr>
                       #end if
-                      #if $day.apptemp.has_data
+                      #if $day.appTemp.has_data
                       <tr>
                         <td>
                           App. Temperature
                         </td>
                         <td>
-                          $current.apptemp ($aus.feelslike($current.apptemp.raw, $current.dateTime.raw))
+                          $current.appTemp ($aus.feelslike($current.appTemp.raw, $current.dateTime.raw))
                         </td>
                       </tr>
                       #end if
@@ -242,14 +242,14 @@
                         <td style="border-top: none;">$day.windchill.min at $day.windchill.mintime</td>
                       </tr>
                       #end if
-                      #if $day.apptemp.has_data
+                      #if $day.appTemp.has_data
                       <tr>
                         <td style="border-bottom: none;">High App. Temp.</td>
-                        <td style="border-bottom: none;">$day.apptemp.max ($aus.feelslike($day.apptemp.max.raw, $day.apptemp.maxtime.raw)) at $day.apptemp.maxtime</td>
+                        <td style="border-bottom: none;">$day.appTemp.max ($aus.feelslike($day.appTemp.max.raw, $day.appTemp.maxtime.raw)) at $day.appTemp.maxtime</td>
                       </tr>
                       <tr>
                         <td style="border-top: none;">Low App. Temp.</td>
-                        <td style="border-top: none;">$day.apptemp.min ($aus.feelslike($day.apptemp.min.raw, $day.apptemp.mintime.raw)) at $day.apptemp.mintime</td>
+                        <td style="border-top: none;">$day.appTemp.min ($aus.feelslike($day.appTemp.min.raw, $day.appTemp.mintime.raw)) at $day.appTemp.mintime</td>
                       </tr>
                       #end if
                       <tr>
@@ -645,8 +645,8 @@
       "Headline" : "$Extras.location_long Weather",
       "datePublished" : "$current.dateTime.format("%Y-%m-%dT%H:%M:%S")$Extras.ISO8061_delta",
       "image" : "$station.station_url/daytempdew.png",
-      #if $day.apptemp.has_data
-      "articleSection" : "Current Conditions: Outside Temperature $current.outTemp App. Temperature $current.apptemp ($aus.feelslike($current.apptemp.raw, $current.dateTime.raw)) Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
+      #if $day.appTemp.has_data
+      "articleSection" : "Current Conditions: Outside Temperature $current.outTemp App. Temperature $current.appTemp ($aus.feelslike($current.appTemp.raw, $current.dateTime.raw)) Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
       #else
       "articleSection" : "Current Conditions: Outside Temperature $current.outTemp Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
       #end if
