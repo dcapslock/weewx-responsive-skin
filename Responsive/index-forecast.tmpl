@@ -45,7 +45,7 @@
 														<td>
 															<strong>$FC.getNode('forecast-period',index=$fcIndex).text</strong>
 															#if $FC.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum") is not None
-																<br/><small>Min</small> <strong><span style="color: blue">$FC.getNode('forecast-period',index="1").getNode('element',type="air_temperature_minimum")</span></strong>
+																<br/><small>Min</small> <strong><span style="color: blue">$FC.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
 															#else
 																<br/>
 															#end if
