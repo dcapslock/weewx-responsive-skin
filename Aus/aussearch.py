@@ -86,7 +86,7 @@ class ausutils(SearchList):
             self.staleness_time = 15 * 60 #15 minutes
         
         if not os.path.exists(self.cache_root):
-            os.makedirs(cself.cache_root)
+            os.makedirs(self.cache_root)
         
         try:
             xml_files = self.generator.skin_dict['AusSearch']['xml_files']
