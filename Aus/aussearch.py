@@ -110,6 +110,13 @@ class ausutils(SearchList):
                 self.aus[localization_object] = self.aus[self.generator.skin_dict['AusSearch']['local'][localization_object]]
             except KeyError:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: localization error for %s" % (localization_object))
+
+        try:
+            index_locality = self.generator.skin_dict['AusSearch']['localities']['index_locality']
+        except:
+            index_locality = 'Sydney'
+
+        self.aus['index_locality'] = index_locality
       
     def get_extension_list(self, timespan, db_lookup):
         return [self]

@@ -15,12 +15,12 @@
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoFive">
 								## Chane to your location. YOu may also need to change the XML file being used.
-								#set $FC = $aus.NSWMETRO.forecast('area',description="Parramatta")
+								#set $FC = $aus.FC_LOCAL.forecast('area',description=str($aus.index_locality))
                 <div class="panel-body">
 									<h6><small>
-									#set $issueDateTime = $aus.NSWMETRO.amoc.issue__time__local.string
-									Forecast for Parramatta<br/>
-									Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.NSWMETRO.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
+									#set $issueDateTime = $aus.FC_LOCAL.amoc.issue__time__local.string
+									Forecast for $aus.index_locality<br/>
+									Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.FC_LOCAL.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
 									</small></h6>
                   <table class="table table-condensed table-responsive">
                     <tbody>
@@ -64,8 +64,8 @@
                     </tbody>
                   </table>
 									<h6><small>
-									#set $nextIssueDateTime = $aus.NSWMETRO.amoc.next__routine__issue__time__local.string
-									The next routine forecast will be issue at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.NSWMETRO.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
+									#set $nextIssueDateTime = $aus.FC_LOCAL.amoc.next__routine__issue__time__local.string
+									The next routine forecast will be issue at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.FC_LOCAL.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
 									</small></h6>
                 </div>
               </div>
