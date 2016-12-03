@@ -72,6 +72,7 @@ class ausutils(SearchList):
                               '70%' : 'http://www.bom.gov.au/images/ui/weather/rain_70.gif',
                               '80%' : 'http://www.bom.gov.au/images/ui/weather/rain_80.gif',
                               '90%' : 'http://www.bom.gov.au/images/ui/weather/rain_90.gif',
+                              '95%' : 'http://www.bom.gov.au/images/ui/weather/rain_95.gif',
                               '100%' : 'http://www.bom.gov.au/images/ui/weather/rain_100.gif'
                             }     
         
@@ -98,6 +99,17 @@ class ausutils(SearchList):
                                                  self,
                                                  generator.formatter,
                                                  generator.converter)
+
+        try:
+            localization = self.generator.skin_dict['AusSearch']['local']
+        except:
+            localization = None
+
+        for localization_object in localization:
+            try:
+                self.aus[localization_object] = self.aus[self.generator.skin_dict['AusSearch']['local'][localization_object]]
+            except KeyError:
+                syslog.syslog(syslog.LOG_ERR, "aussearch: localization error for %s" % (localization_object))
       
     def get_extension_list(self, timespan, db_lookup):
         return [self]

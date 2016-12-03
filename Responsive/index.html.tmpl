@@ -423,13 +423,13 @@
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoSix">
                 <div class="panel-body">
-                  <h6><small>$aus.NSWWARNINGS.channel.title</small></h6>
+                  <h6><small>$aus.WARNINGS.channel.title</small></h6>
                   <table class="table table-condensed table-responsive">
                     <tbody>
                       <tr>
                         <td class="text-primary">Current Warnings</td>
                       </tr>
-                      #if $aus.NSWWARNINGS.channel.getNode('item[1]') is None
+                      #if $aus.WARNINGS.channel.getNode('item[1]') is None
                       <tr>
                         <td>
                           None
@@ -440,12 +440,12 @@
                       ## Not using While in case XML breaks in some way and we get stuck in a loop
                       #for $wnCount in range(1,21)
                       #set $wnIndex = '[' + str($wnCount) +']'
-                      #if $aus.NSWWARNINGS.channel.getNode('item'+$wnIndex) is None
+                      #if $aus.WARNINGS.channel.getNode('item'+$wnIndex) is None
                       #break
                       #end if
                       <tr>
                         <td>
-                          <a href="$aus.NSWWARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.NSWWARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                          <a href="$aus.WARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.WARNINGS.channel.getNode('item'+$wnIndex).title</a>
                         </td>
                       </tr>
                       #end for
