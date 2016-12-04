@@ -2,6 +2,7 @@
 import pytz
 import time
 import dateutil.parser
+import dateutil.tz
 import syslog
 import os.path
 import xml.etree.cElementTree as ET
@@ -198,10 +199,14 @@ class XmlFileHelper(object):
             self.root = self.dom.getroot()
             file_stale = False 
 
-            nextIssue = self.root.find('amoc/next-routine-issue-time-local')
+            nextIssue = self.root.find('amoc/next-routine-issue-time-utc')
             if nextIssue is not None:
                 check_datetime = dateutil.parser.parse(nextIssue.text) + datetime.timedelta(seconds=searcher.staleness_time)
-                now_datetime = datetime.datetime.now(pytz.timezone('Australia/Sydney'))
+                # For completeness we need to make sure that we are comparing timezone aware times
+                # since the parse of next-routine-issue-time-utc wil return a timezone aware time
+                # hence we pass a utc timezone to get the current utc time as a timezone aware time
+                # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
+                now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
                 
                 if now_datetime >= check_datetime:
                     file_stale = True
