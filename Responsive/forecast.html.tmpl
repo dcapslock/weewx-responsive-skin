@@ -58,33 +58,35 @@
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
+                #set $issueDateTime = $aus.FC_DISTRICT.amoc.issue__time__local.string
+                #set $FC_LOCAL = $aus.FC_LOCAL.forecast('area', description=str($aus.index_locality))
+                #set $FC_DISTRICT = $aus.FC_DISTRICT.forecast.getNode('area', type="metropolitan")
+                #if $FC_DISTRICT is None
+                #set $FC_DISTRICT = $aus.FC_DISTRICT.forecast.getNode('area', type="public-district")
+                #end if
                   <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordianOne" href="#collapseAccOneOne"
-                     draggable="true">Detailed Forecast</a>
+                     draggable="true">$FC_LOCAL.description Forecast</a>
                 </h4>
               </div>
               <div class="panel-collapse collapse in" id="collapseAccOneOne">
                 <div class="panel-body">
                   <h6>
                     <small>
-                      #set $issueDateTime = $aus.SYDNEY.amoc.issue__time__local.string
-                      #set $FCP = $aus.NSWMETRO.forecast('area',description="Parramatta")
-                      #set $FCSL = $aus.SYDNEY.forecast.getNode('area', description="Sydney", type="location")
-                      #set $FCSM = $aus.SYDNEY.forecast.getNode('area', description="Sydney", type="metropolitan")
-                      Forecast for Parramatta and Sydney area. Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.SYDNEY.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
+                      Forecast for $FC_LOCAL.description and $FC_DISTRICT.description area. Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.FC_DISTRICT.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
                     </small>
                   </h6>
-                  #for $fcCount in range(7)
+                  #for $fcCount in range(8)
                   #set $fcIndex = str($fcCount)
-                  #if $FCP.getNode('forecast-period', index=$fcIndex) is not None
+                  #if $FC_LOCAL.getNode('forecast-period', index=$fcIndex) is not None
                   <div class="row">
                     <div class="col-xs-12">
                       #if $fcIndex == "0"
                       <div class="border-top-thick2 border-bottom-dotted text-primary">
-                        Forecast for rest of $dateutil.parser.parse($FCSM.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A")
+                        Forecast for rest of $dateutil.parser.parse($FC_LOCAL.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A")
                       </div>
                       #else
                       <div class="border-top-thick border-bottom-dotted text-primary">
-                        $dateutil.parser.parse($FCSL.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A %-d %b")
+                        $dateutil.parser.parse($FC_LOCAL.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A %-d %b")
                       </div>
                       #end if
                     </div>
@@ -94,24 +96,24 @@
                       <div class="extra-vertical-padding">
                         <div class="row">
                           <div class="col-xs-3">
-                            <img src="$aus.icons[$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="forecast_icon_code").string]" />
+                            <img src="$aus.icons[$FC_LOCAL.getNode('forecast-period',index=$fcIndex).getNode('element',type="forecast_icon_code").string]" />
                           </div>
                           <div class="col-xs-9">
-                            #if $FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum") is not None
-                            <small>Min</small> <strong><span style="color: blue">$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
+                            #if $FC_LOCAL.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum") is not None
+                            <small>Min</small> <strong><span style="color: blue">$FC_LOCAL.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
                             #end if
-                            #if $FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum") is not None
-                            <small>Max</small> <strong><span style="color: red">$FCP.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong><br />
+                            #if $FC_LOCAL.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum") is not None
+                            <small>Max</small> <strong><span style="color: red">$FC_LOCAL.getNode('forecast-period',index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong><br />
                             #end if
-                            <strong>$FCP.getNode('forecast-period',index=$fcIndex).text</strong>
-                            #if $FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation") is not None
+                            <strong>$FC_LOCAL.getNode('forecast-period',index=$fcIndex).text</strong>
+                            #if $FC_LOCAL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation") is not None
                             <div class="border-top-dotted">
-                              <small>Chance of any rain: </small><span style="color: green"><strong>$FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string</strong></span>
-                              <img style="vertical-align: baseline;" src="$aus.rainImgs[$FCSL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string]" />
+                              <small>Chance of any rain: </small><span style="color: green"><strong>$FC_LOCAL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string</strong></span>
+                              <img style="vertical-align: baseline;" src="$aus.rainImgs[$FC_LOCAL.getNode('forecast-period', index=$fcIndex).getNode('text',type="probability_of_precipitation").string]" />
                             </div>
-                            #if $FCSL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range") is not None
+                            #if $FC_LOCAL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range") is not None
                             <div class="border-top-dotted">
-                              <small>Rainfall amount: </small><span style="color: green"><strong>$FCSL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range").string</strong></span>
+                              <small>Rainfall amount: </small><span style="color: green"><strong>$FC_LOCAL.getNode('forecast-period', index=$fcIndex).getNode('element',type="precipitation_range").string</strong></span>
                             </div>
                             #end if
                             #end if
@@ -123,8 +125,10 @@
                       <div class="extra-vertical-padding">
                         <div class="row">
                           <div class="col-xs-12">
-                            <strong>Sydney area</strong><br />
-                            $FCSM.getNode('forecast-period', index=$fcIndex).getNode('text',type="forecast").string
+                            #if $FC_DISTRICT.getNode('forecast-period', index=$fcIndex) is not None
+                            <strong>$FC_DISTRICT.description area</strong><br />
+                            $FC_DISTRICT.getNode('forecast-period', index=$fcIndex).getNode('text',type="forecast").string
+                            #end if
                           </div>
                         </div>
                       </div>
@@ -134,8 +138,8 @@
                   #end for
                   <h6>
                     <small>
-                      #set $nextIssueDateTime = $aus.NSWMETRO.amoc.next__routine__issue__time__local.string
-                      The next routine forecast will be issued at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.NSWMETRO.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
+                      #set $nextIssueDateTime = $aus.FC_LOCAL.amoc.next__routine__issue__time__local.string
+                      The next routine forecast will be issued at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.FC_LOCAL.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
                     </small>
                   </h6>
                 </div>
@@ -149,7 +153,7 @@
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoOne">
-                    Around Sydney
+                    $FC_DISTRICT.description area
                   </a>
                 </h4>
               </div>
@@ -157,31 +161,31 @@
                 <div class="panel-body">
                   <h6>
                     <small>
-                      #set $issueDateTime = $aus.SYDNEY.amoc.issue__time__local.string
-                      Forecast for Sydney<br />
-                      Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.SYDNEY.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
+                      #set $issueDateTime = $aus.FC_DISTRICT.amoc.issue__time__local.string
+                      Forecast for $FC_DISTRICT.description area<br />
+                      Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.FC_DISTRICT.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
                     </small>
                   </h6>
                   <table class="table table-condensed table-responsive">
                     <tbody>
                       <tr>
                         <td class="text-primary" colspan="4">
-                          #if $aus.SYDNEY.forecast.getNode('area', description="Parramatta").getNode('forecast-period', index="0") is not None
-                          #set $fcIndex = "0"
-                          Forecast for rest of $dateutil.parser.parse($aus.SYDNEY.forecast.getNode('area', description="Parramatta").getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A")
+                          ## Simulate what BOM does. In the evening they default to showing next day
+                          ## We can detect this when the "0" index of the first location does not exist or has no maximum air temperature
+                          #if $aus.FC_DISTRICT.forecast.getNode('area', type="location").getNode('forecast-period', index="0") is not None 
+                            #if $aus.FC_DISTRICT.forecast.getNode('area', type="location").getNode('forecast-period', index="0").getNode('element',type="air_temperature_maximum") is not None
+                              #set $fcIndex = "0"
+                            #else
+                              #set $fcIndex = "1"
+                            #end if
                           #else
-                          #set $fcIndex = "1"
-                          Forecast for $dateutil.parser.parse($aus.SYDNEY.forecast.getNode('area', description="Parramatta").getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A")
+                            #set $fcIndex = "1"
                           #end if
-                          ## Looks like BOM gets icons from NSWMETRO forecast even though they do not say so. So we will use them.
-                          #set $fcIconSydney = $aus.NSWMETRO.forecast.getNode('area', description="Sydney", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
-                          #set $fcIconPenrith = $aus.NSWMETRO.forecast.getNode('area', description="Penrith", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
-                          #set $fcIconLiverpool = $aus.NSWMETRO.forecast.getNode('area', description="Liverpool", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
-                          #set $fcIconTerreyHills = $aus.NSWMETRO.forecast.getNode('area', description="Terrey Hills", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
-                          #set $fcIconRichmond = $aus.NSWMETRO.forecast.getNode('area', description="Richmond", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
-                          #set $fcIconParramatta = $aus.NSWMETRO.forecast.getNode('area', description="Parramatta", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
-                          #set $fcIconCampbelltown = $aus.NSWMETRO.forecast.getNode('area', description="Campbelltown", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
-                          #set $fcIconBondi = $aus.NSWMETRO.forecast.getNode('area', description="Bondi", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="forecast_icon_code").string
+                          #if $fcIndex == "0" 
+                          Forecast for rest of $dateutil.parser.parse($FC_DISTRICT.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A")
+                          #else
+                          Forecast for $dateutil.parser.parse($FC_DISTRICT.getNode('forecast-period', index=$fcIndex).start__time__local).strftime("%A")
+                          #end if
                         </td>
                       </tr>
                       <tr>
@@ -189,157 +193,36 @@
                         <td><strong>Location</strong></td>
                         <td><strong>Min</strong></td>
                         <td><strong>Max</strong></td>
-                      </tr>
+                      </tr>    
+                      #for $FC_LOCATION in $aus.FC_DISTRICT.forecast.getNodes('area')  
+                      #if $FC_LOCATION.type == "location"
                       <tr>
                         <td>
-                          <img src="$aus.iconsSml[$fcIconSydney]" />
+                          ## Forecast icons come from locality file and not the district file even though BOM does not suggest so                      
+                          <img src="$aus.iconsSml[$aus.FC_LOCAL.forecast('area', description=str($FC_LOCATION.description)).getNode('forecast-period',index=$fcIndex).getNode('element',type="forecast_icon_code").string]" />
                         </td>
                         <td>
-                          Sydney
+                          $FC_LOCATION.description
                         </td>
                         <td>
                           #if $fcIndex == "0"
                           -
                           #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Sydney", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
+                          <strong><span style="color: blue">$FC_LOCATION.getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
                           #end if
                         </td>
                         <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Sydney", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
+                          <strong><span style="color: red">$FC_LOCATION.getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
                         </td>
                       </tr>
-                      <tr>
-                        <td>
-                          <img src="$aus.iconsSml[$fcIconPenrith]" />
-                        </td>
-                        <td>
-                          Penrith
-                        </td>
-                        <td>
-                          #if $fcIndex == "0"
-                          -
-                          #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Penrith", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-                          #end if
-                        </td>
-                        <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Penrith", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img src="$aus.iconsSml[$fcIconLiverpool]" />
-                        </td>
-                        <td>
-                          Liverpool
-                        </td>
-                        <td>
-                          #if $fcIndex == "0"
-                          -
-                          #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Liverpool", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-                          #end if
-                        </td>
-                        <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Liverpool", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img src="$aus.iconsSml[$fcIconTerreyHills]" />
-                        </td>
-                        <td>
-                          Terrey Hills
-                        </td>
-                        <td>
-                          #if $fcIndex == "0"
-                          -
-                          #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Terrey Hills", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-                          #end if
-                        </td>
-                        <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Terrey Hills", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img src="$aus.iconsSml[$fcIconRichmond]" />
-                        </td>
-                        <td>
-                          Richmond
-                        </td>
-                        <td>
-                          #if $fcIndex == "0"
-                          -
-                          #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Richmond", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-                          #end if
-                        </td>
-                        <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Richmond", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img src="$aus.iconsSml[$fcIconParramatta]" />
-                        </td>
-                        <td>
-                          Parramatta
-                        </td>
-                        <td>
-                          #if $fcIndex == "0"
-                          -
-                          #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Parramatta", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-                          #end if
-                        </td>
-                        <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Parramatta", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img src="$aus.iconsSml[$fcIconCampbelltown]" />
-                        </td>
-                        <td>
-                          Campbelltown
-                        </td>
-                        <td>
-                          #if $fcIndex == "0"
-                          -
-                          #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Campbelltown", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-                          #end if
-                        </td>
-                        <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Campbelltown", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <img src="$aus.iconsSml[$fcIconBondi]" />
-                        </td>
-                        <td>
-                          Bondi
-                        </td>
-                        <td>
-                          #if $fcIndex == "0"
-                          -
-                          #else
-                          <strong><span style="color: blue">$aus.SYDNEY.forecast.getNode('area', description="Bondi", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_minimum")</span></strong>
-                          #end if
-                        </td>
-                        <td>
-                          <strong><span style="color: red">$aus.SYDNEY.forecast.getNode('area', description="Bondi", type="location").getNode('forecast-period', index=$fcIndex).getNode('element',type="air_temperature_maximum")</span></strong>
-                        </td>
-                      </tr>
+                      #end if
+                      #end for
                     </tbody>
                   </table>
                   <h6>
                     <small>
-                      #set $nextIssueDateTime = $aus.SYDNEY.amoc.next__routine__issue__time__local.string
-                      The next routine forecast will be issued at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.SYDNEY.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
+                      #set $nextIssueDateTime = $aus.FC_DISTRICT.amoc.next__routine__issue__time__local.string
+                      The next routine forecast will be issued at $dateutil.parser.parse($nextIssueDateTime).strftime("%I:%M%p") $aus.FC_DISTRICT.amoc.next__routine__issue__time__local.tz $dateutil.parser.parse($nextIssueDateTime).strftime("%A")
                     </small>
                   </h6>
                 </div>
@@ -356,13 +239,13 @@
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoTwo">
                 <div class="panel-body">
-                  <h6><small>$aus.NSWWARNINGS.channel.title</small></h6>
+                  <h6><small>$aus.WARNINGS.channel.title</small></h6>
                   <table class="table table-condensed table-responsive">
                     <tbody>
                       <tr>
                         <td class="text-primary">Current Warnings</td>
                       </tr>
-                      #if $aus.NSWWARNINGS.channel.getNode('item[1]') is None
+                      #if $aus.WARNINGS.channel.getNode('item[1]') is None
                       <tr>
                         <td>
                           None
@@ -373,12 +256,12 @@
                       ## Not using While in case XML breaks in some way and we get stuck in a loop
                       #for $wnCount in range(1,21)
                       #set $wnIndex = '[' + str($wnCount) +']'
-                      #if $aus.NSWWARNINGS.channel.getNode('item'+$wnIndex) is None
+                      #if $aus.WARNINGS.channel.getNode('item'+$wnIndex) is None
                         #break
                       #end if
                       <tr>
                         <td>
-                          <a href="$aus.NSWWARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.NSWWARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                          <a href="$aus.WARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.WARNINGS.channel.getNode('item'+$wnIndex).title</a>
                         </td>
                       </tr>
                       #end for

@@ -14,7 +14,6 @@
                 </h4>
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoFive">
-								## Chane to your location. YOu may also need to change the XML file being used.
 								#set $FC = $aus.FC_LOCAL.forecast('area',description=str($aus.index_locality))
                 <div class="panel-body">
 									<h6><small>
@@ -24,7 +23,7 @@
 									</small></h6>
                   <table class="table table-condensed table-responsive">
                     <tbody>
-										#for $fcCount in range(7)										
+										#for $fcCount in range(8)										
 												#set $fcIndex = str($fcCount)
 												#if $FC.getNode('forecast-period',index=$fcIndex) is not None
 													<tr>

@@ -253,6 +253,17 @@ class XMLNode(object):
     def __call__(self, *args, **kwargs):
         return self.search(*args, **kwargs)
         
+    def getNodes(self, tag=None):
+        #TODO getNodes to support search and use node.findAll
+        #For now this should do in getting all locations in a forecast
+        nodes = self.node.iter(tag)
+
+        xmlNodes = []
+        for node in nodes:
+            xmlNodes.append(XMLNode(node))
+
+        return xmlNodes
+    
     def getNode(self, *args, **kwargs):
         """
         Enables getting the current node.
