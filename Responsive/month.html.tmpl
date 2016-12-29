@@ -104,7 +104,7 @@
                   #end if
                   #if $month.extraTemp1.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="monthpond.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Pond Temperatures" />
+                    <img src="monthextra.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="$Extras.extraTempsPlotAltText" />
                   </div>
                   #end if
                 </div>
@@ -228,12 +228,22 @@
                       </tr>
                       #if $month.extraTemp1.has_data
                       <tr>
-                        <td style="border-bottom: none;">High Pond Temperature</td>
+                        <td style="border-bottom: none;">High $Extras.extraTemp1Label</td>
                         <td style="border-bottom: none;">$month.extraTemp1.max at $month.extraTemp1.maxtime</td>
                       </tr>
                       <tr>
-                        <td style="border-top: none;">Low Pond Temperature</td>
+                        <td style="border-top: none;">Low $Extras.extraTemp1Label</td>
                         <td style="border-top: none;">$month.extraTemp1.min at $month.extraTemp1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $month.extraTemp2.has_data
+                      <tr>
+                          <td style="border-bottom: none;">High $Extras.extraTemp2Label</td>
+                          <td style="border-bottom: none;">$month.extraTemp2.max at $month.extraTemp2.maxtime</td>
+                      </tr>
+                      <tr>
+                          <td style="border-top: none;">Low $Extras.extraTemp2Label</td>
+                          <td style="border-top: none;">$month.extraTemp2.min at $month.extraTemp2.mintime</td>
                       </tr>
                       #end if
                       #if $month.UV.has_data
@@ -386,12 +396,22 @@
                       </tr>
                       #if $year.extraTemp1.has_data
                       <tr>
-                        <td style="border-bottom: none;">High Pond Temperature</td>
+                        <td style="border-bottom: none;">High $Extras.extraTemp1Label</td>
                         <td style="border-bottom: none;">$year.extraTemp1.max at $year.extraTemp1.maxtime</td>
                       </tr>
                       <tr>
-                        <td style="border-top: none;">Low Pond Temperature</td>
+                        <td style="border-top: none;">Low $Extras.extraTemp1Label</td>
                         <td style="border-top: none;">$year.extraTemp1.min at $year.extraTemp1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $year.extraTemp2.has_data
+                      <tr>
+                          <td style="border-bottom: none;">High $Extras.extraTemp2Label</td>
+                          <td style="border-bottom: none;">$year.extraTemp2.max at $year.extraTemp2.maxtime</td>
+                      </tr>
+                      <tr>
+                          <td style="border-top: none;">Low $Extras.extraTemp2Label</td>
+                          <td style="border-top: none;">$year.extraTemp2.min at $year.extraTemp2.mintime</td>
                       </tr>
                       #end if
                       #if $year.UV.has_data
