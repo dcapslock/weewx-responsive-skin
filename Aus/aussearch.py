@@ -5,12 +5,48 @@ import dateutil.parser
 import dateutil.tz
 import syslog
 import os.path
+import pprint
 import xml.etree.cElementTree as ET
 
 from urllib import urlopen
 
 import weewx.units
+import weeutil.weeutil
 from weewx.cheetahgenerator import SearchList
+
+#feeslike lookups
+DaySummerCoastRanges = { -40: 'Cold', 16: 'Cool', 22: 'Mild', 27: 'Warm', 32: 'Hot', 37: 'Very Hot' }
+DaySummerInlandPlains = { -40: 'Cold', 20: 'Cool', 25: 'Mild', 30: 'Warm', 35: 'Hot', 40: 'Very Hot' }
+DaySummerTropics = { -40: '-', 35: 'Hot', 40: '-' }
+
+NightSummerSouthRanges = { -40: 'Cold', 10: 'Cool', 15: 'Mild', 18: 'Warm', 22: 'Hot' }
+NightSummerNorth = { -40: 'Cold', 13: 'Cool', 18: 'Mild', 21: 'Warm', 25: 'Hot' }
+NightSummerTropics = {  -40: 'Cool', 20: '-' }
+
+DayWinterSouthRanges = { -40: 'Very Cold', 10: 'Cold', 13: 'Cool', 16: 'Mild', 20: 'Warm' }
+DayWinterNorth = { -40: 'Very Cold', 10: 'Cold', 15: 'Cool', 20: 'Mild', 25: 'Warm' }
+DayWinterTropics = { -40: 'Cold', 20: 'Cool', 26: '-' }
+
+NightWinterSouthRanges = { -40: 'Very Cold', 1: 'Cold', 5: 'Cool', 10: 'Mild' }
+NightWinterNorth = { -40: 'Very Cold', 5: 'Cold', 10: 'Cool', 15: 'Mild' }
+NightWinterTropics = { -40: 'Cold', 13: 'Cool', 18: '-' }
+
+feelslikeDict = {
+                'DaySummerCoastRanges': DaySummerCoastRanges,
+                'DaySummerInlandPlains': DaySummerInlandPlains,
+                'DaySummerTropics': DaySummerTropics,
+                'NightSummerSouthRanges': NightSummerSouthRanges,
+                'NightSummerNorth': NightSummerNorth,
+                'NightSummerTropics': NightSummerTropics,
+                'DayWinterSouthRanges': DayWinterSouthRanges,
+                'DayWinterNorth': DayWinterNorth,
+                'DayWinterTropics': DayWinterTropics,
+                'NightWinterSouthRanges': NightWinterSouthRanges,
+                'NightWinterNorth': NightWinterNorth,
+                'NightWinterTropics': NightWinterTropics
+                }
+
+feelslikeLocalDefaults = ['DaySummerCoastRanges', 'NightSummerSouthRanges', 'DayWinterSouthRanges', 'NightWinterSouthRanges']
 
 class ausutils(SearchList):
     """Class that implements the '$aus' tag."""
@@ -18,7 +54,28 @@ class ausutils(SearchList):
     def __init__(self, generator):
         SearchList.__init__(self, generator)
         self.aus = { "feelslike" : self.feelslikeFunc }
-        #put these in the skin_dict so we can change them easily!
+
+        try:
+            feelslikeLocalList = weeutil.weeutil.option_as_list(self.generator.skin_dict['AusSearch']['feelslike']['feelslikeLocal'])
+        except KeyError:
+            feelslikeLocalList = feelslikeLocalDefaults
+
+        try:
+            self.feelslikeLocal = {}
+
+            self.feelslikeLocal['DaySummer']      = feelslikeDict[feelslikeLocalList[0]]
+            self.feelslikeLocal['NightSummer']    = feelslikeDict[feelslikeLocalList[1]]
+            self.feelslikeLocal['DayWinter']      = feelslikeDict[feelslikeLocalList[2]]
+            self.feelslikeLocal['NightWinter']    = feelslikeDict[feelslikeLocalList[3]]
+
+            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['DaySummer'] = %s" % (pprint.pformat(self.feelslikeLocal['DaySummer'])))
+            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['NightSummer'] = %s" % (pprint.pformat(self.feelslikeLocal['NightSummer'])))
+            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['DayWinter'] = %s" % (pprint.pformat(self.feelslikeLocal['DayWinter'])))
+            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['NightWinter'] = %s" % (pprint.pformat(self.feelslikeLocal['NightWinter'])))
+        except KeyError:
+            syslog.syslog(syslog.LOG_ERR, "aussearch: invalid feelslikeLocal settings [%s, %s, %s, %s]" 
+                          % feelslikeLocalList[0], feelslikeLocalList[1], feelslikeLocalList[2], feelslikeLocalList[3])
+          
         self.aus['icons'] = { 
                               '1' : 'http://www.bom.gov.au/images/symbols/large/sunny.png', 
                               '2' : 'http://www.bom.gov.au/images/symbols/large/clear.png', 
@@ -128,59 +185,24 @@ class ausutils(SearchList):
         try:
             DT = datetime.datetime.fromtimestamp(TS)
             if DT.month >= 10 or DT.month <= 3:
-                # October to March
+                # October to March - 'Summer'
                 if DT.hour >= 9 and DT.hour <= 21:
                     #Daytime
-                    if T_C >= 37.0:
-                        return "Very hot"
-                    elif T_C >= 32.0:
-                        return "Hot"
-                    elif T_C >= 27.0:
-                        return "Warm"
-                    elif T_C >= 22.0:
-                        return "Mild"
-                    elif T_C >= 16.0:
-                        return "Cool"
-                    else:
-                        return "Cold"
+                    feelslikeLookup = self.feelslikeLocal['DaySummer'] 
                 else:
                     #Nighttime
-                    if T_C >= 22.0:
-                        return "Hot"
-                    elif T_C >= 18.0:
-                        return "Warm"
-                    elif T_C >= 15.0:
-                        return "Mild"
-                    elif T_C >= 10.0:
-                        return "Cool"
-                    else:
-                        return "Cold"             
+                    feelslikeLookup = self.feelslikeLocal['NightSummer']
             else:
-                # April to September
+                # April to September - 'Winter'
                 if DT.hour >= 9 or DT.hour <= 21:
                     #Daytime
-                    if T_C >= 20.0:
-                        return "Warm"
-                    elif T_C >= 26.0:
-                        return "Mild"
-                    elif T_C >= 13.0:
-                        return "Cool"
-                    elif T_C >= 10.0:
-                        return "Cold"
-                    else:
-                        return "Very cold"
+                    feelslikeLookup = self.feelslikeLocal['DayWinter']
                 else:
                     #Nighttime
-                    if T_C >= 10.0:
-                        return "Mild"
-                    elif T_C >= 5.0:
-                        return "Cool"
-                    elif T_C >= 1.0:
-                        return "Cold"
-                    else:
-                        return "Very cold"
+                    feelslikeLookup = self.feelslikeLocal['NightWinter']        
+            return feelslikeLookup[max(k for k in feelslikeLookup if k < T_C)]
         except:
-            return None
+            return "-"
                 
 class XmlFileHelper(object):
     """Helper class used for for the xml file template tag."""
