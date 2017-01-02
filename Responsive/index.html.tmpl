@@ -490,15 +490,186 @@
               </div>
             </div>
             #end if
+            #if $Extras.has_key('use_bomobs')
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoEight">
-                    About
+                   Observations (BOM)
                   </a>
                 </h4>
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoEight">
+                <div class="panel-body">
+									<h6><small>
+									BOM observatons for $aus.OBS_LOCAL.observations.header.name<br>
+									$aus.OBS_LOCAL.observations.header.refresh_message 
+									</h6></small>
+                  <table class="table table-condensed table-responsive">
+                    <tbody>
+                      <tr>
+												<td>Current Temperature</td>
+												<td>$aus.OBS_LOCAL.observations.data.air_temp °C</td>
+											</tr>
+                      <tr>
+												<td>Apparent Temperature</td>
+												<td>$aus.OBS_LOCAL.observations.data.apparent_t °C ($aus.feelslike($aus.OBS_LOCAL.observations.data.apparent_t, $current.dateTime.raw))</td>
+											</tr>
+                      <tr>
+												<td>Relative Humidity</td>
+												<td>$aus.OBS_LOCAL.observations.data.rel_hum %</td>
+											</tr>
+                      <tr>
+												<td>Wind</td>
+												<td>$aus.OBS_LOCAL.observations.data.wind_spd_kmh km/h from $aus.OBS_LOCAL.observations.data.wind_dir</td>
+											</tr>
+                      <tr>
+												<td>Rain since 9am</td>
+												<td>$aus.OBS_LOCAL.observations.data.rain_trace mm</td>
+											</tr>
+										</tbody>
+									</table>
+              	</div>
+              </div>
+            </div>
+						#end if
+            #if $Extras.has_key('use_almanac')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoNine">
+                    Almanac
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoNine">
+                <div class="panel-body">
+                	<h4>Sun</h4>
+                	<table class="table table-condensed table-responsive">
+                		<tr>
+                  		<td style="border-bottom: none;">Start civil twilight:</td>
+                  		<td style="border-bottom: none;">$almanac(horizon=-6).sun(use_center=1).rise</td>
+                		</tr>
+                		<tr>
+                  		<td style="border-bottom: none;">Sunrise:</td>
+                  		<td style="border-bottom: none;">$almanac.sun.rise</td>
+                		</tr>
+                		<tr>
+                  		<td style="border-bottom: none;">Transit:</td>
+                  		<td style="border-bottom: none;">$almanac.sun.transit</td>
+                		</tr>
+                		<tr>
+                  		<td style="border-bottom: none;">Sunset:</td>
+                  		<td style="border-bottom: none;">$almanac.sun.set<td>
+                		</tr>
+										<tr>
+											<td style="border-bottom: none;">End civil twilight:</td>
+											<td style="border-bottom: none;">$almanac(horizon=-6).sun(use_center=1).set</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Azimuth:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.sun.az)</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Altitude:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.sun.altitude)</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Right ascension:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.sun.ra)</td>
+										</tr style="border-bottom: none;">
+										<tr>
+											<td style="border-bottom: none;">Declination:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.sun.dec)</td>
+										</tr>
+										#if $almanac.next_equinox.raw < $almanac.next_solstice.raw
+										## The equinox is before the solstice. Display them in order.
+											<tr>
+												<td style="border-bottom: none;">Equinox:</td>
+												<td style="border-bottom: none;">$almanac.next_equinox</td>
+											</tr>
+											<tr>
+												<td style="border-bottom: none;">Solstice:</td>
+												<td style="border-bottom: none;">$almanac.next_solstice</td>
+											</tr>
+										#else
+										## The solstice is before the equinox. Display them in order.
+											<tr>
+												<td style="border-bottom: none;">Solstice:</td>
+												<td style="border-bottom: none;">$almanac.next_solstice</td>
+											</tr>
+											<tr>
+												<td style="border-bottom: none;">Equinox:</td>
+												<td style="border-bottom: none;">$almanac.next_equinox</td>
+											</tr>
+										#end if
+                	</table>
+                <h4>Moon</h4>
+                <table class="table table-condensed table-responsive">
+										<tr>
+											<td style="border-bottom: none;">Rise:</td>
+											<td style="border-bottom: none;">$almanac.moon.rise</td>
+										<tr>
+											<td style="border-bottom: none;">Transit:</td>
+											<td style="border-bottom: none;">$almanac.moon.transit</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Set:</td>
+											<td style="border-bottom: none;">$almanac.moon.set</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Azimuth:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.moon.az)</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Altitude:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.moon.alt)</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Right ascension:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.moon.ra)</td>
+										</tr>
+										<tr>
+											<td style="border-bottom: none;">Declination:</td>
+											<td style="border-bottom: none;">$("%.1f&deg;" % $almanac.moon.dec)</td>
+										</tr>
+										#if $almanac.next_full_moon.raw < $almanac.next_new_moon.raw
+											<tr>
+												<td style="border-bottom: none;">Full moon:</td>
+												<td style="border-bottom: none;">$almanac.next_full_moon</td>
+											</tr>
+											<tr>
+												<td style="border-bottom: none;">New moon:</td>
+												<td style="border-bottom: none;">$almanac.next_new_moon</td>
+											</tr>
+										#else
+											<tr>
+												<td style="border-bottom: none;">New moon:</td>
+												<td style="border-bottom: none;">$almanac.next_new_moon</td>
+											</tr>
+											<tr>
+												<td style="border-bottom: none;">Full moon:</td>
+												<td style="border-bottom: none;">$almanac.next_full_moon</td>
+											</tr>
+										#end if
+										<tr>
+											<td style="border-bottom: none;">Phase:</td>
+											<td style="border-bottom: none;">$almanac.moon_phase<br/>($almanac.moon_fullness% full)</td>
+										</tr>
+              		</table>
+              	</div>
+              </div>
+            </div>
+						#end if
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoTen">
+                    About
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoTen">
                 <div class="panel-body">
                   <table class="table table-condensed table-responsive">
                     <thead>
