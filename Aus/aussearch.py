@@ -7,6 +7,7 @@ import syslog
 import os.path
 import pprint
 import xml.etree.cElementTree as ET
+import json
 
 from urllib import urlopen
 
@@ -143,6 +144,11 @@ class ausutils(SearchList):
             self.staleness_time = float(self.generator.skin_dict['AusSearch']['staleness_time'])
         except KeyError:
             self.staleness_time = 15 * 60 #15 minutes
+
+        try:
+            self.refresh_time = float(self.generator.skin_dict['AusSearch']['refresh_time'])
+        except KeyError:
+            self.refresh_time = 30 * 60 #30 minutes
         
         if not os.path.exists(self.cache_root):
             os.makedirs(self.cache_root)
@@ -152,22 +158,36 @@ class ausutils(SearchList):
         except:
             xml_files = None
         
-        for xml_file in xml_files:
-            self.aus[xml_file] = XmlFileHelper(self.generator.skin_dict['AusSearch']['xml_files'][xml_file],
-                                                 self,
-                                                 generator.formatter,
-                                                 generator.converter)
+        if xml_files is not None:
+            for xml_file in xml_files:
+                self.aus[xml_file] = XmlFileHelper(self.generator.skin_dict['AusSearch']['xml_files'][xml_file],
+                                                     self,
+                                                     generator.formatter,
+                                                     generator.converter)
 
+        try:
+            json_files = self.generator.skin_dict['AusSearch']['json_files']
+        except:
+            json_files = None
+
+        if json_files is not None:
+            for json_file in json_files:
+                self.aus[json_file] = JsonFileHelper(self.generator.skin_dict['AusSearch']['json_files'][json_file],
+                                                     self,
+                                                     generator.formatter,
+                                                     generator.converter)
+    
         try:
             localization = self.generator.skin_dict['AusSearch']['local']
         except:
             localization = None
 
-        for localization_object in localization:
-            try:
-                self.aus[localization_object] = self.aus[self.generator.skin_dict['AusSearch']['local'][localization_object]]
-            except KeyError:
-                syslog.syslog(syslog.LOG_ERR, "aussearch: localization error for %s" % (localization_object))
+        if localization is not None:
+            for localization_object in localization:
+                try:
+                    self.aus[localization_object] = self.aus[self.generator.skin_dict['AusSearch']['local'][localization_object]]
+                except KeyError:
+                    syslog.syslog(syslog.LOG_ERR, "aussearch: localization error for %s" % (localization_object))
 
         try:
             index_locality = self.generator.skin_dict['AusSearch']['localities']['index_locality']
@@ -175,7 +195,7 @@ class ausutils(SearchList):
             index_locality = 'Sydney'
 
         self.aus['index_locality'] = index_locality
-      
+  
     def get_extension_list(self, timespan, db_lookup):
         return [self]
     
@@ -347,3 +367,131 @@ class XMLNode(object):
             return XMLNode(childNode)
         else:
             raise AttributeError
+
+class JsonFileHelper(object):
+    """Helper class used for for the xml file template tag."""
+    def __init__(self, json_file, searcher, formatter, converter):
+        """
+        json_file: xml file we are reading.
+        formatter: an instance of Formatter
+        converter: an instance of Converter
+        """
+        self.json_file = json_file
+        self.local_file = json_file.split('/')[-1]
+        self.local_file_path = os.path.join(searcher.cache_root, self.local_file)
+ 
+        if os.path.exists(self.local_file_path):
+            try:
+                self.root = json.load(open(self.local_file_path, "r"))
+            except IOError, e:
+                syslog.syslog(syslog.LOG_ERR, "aussearch: cannot load local json file %s: %s" % (self.local_file_path, e))
+                self.root = None
+
+            if self.root is not None:
+                try:
+                    latest_data_utc = self.root['observations']['data'][0]['aifstime_utc']
+                except KeyError:
+                    latest_data_utc = None
+
+                if latest_data_utc is not None:
+                    check_datetime = dateutil.parser.parse(latest_data_utc + "UTC") + datetime.timedelta(seconds=searcher.refresh_time) + datetime.timedelta(seconds=searcher.staleness_time)
+                    # For completeness we need to make sure that we are comparing timezone aware times
+                    # since the parse of next-routine-issue-time-utc wil return a timezone aware time
+                    # hence we pass a utc timezone to get the current utc time as a timezone aware time
+                    # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
+                    now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check json file: %s expires %s" % (self.local_file_path, check_datetime))
+
+                    if now_datetime <= check_datetime:
+                        file_stale = False
+                    else:
+                        file_stale = True
+                        syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file is stale: %s" % (self.local_file_path))
+                else:
+                    file_stale = True
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file bad data assuming stale: %s" % (self.local_file_path))
+        else:
+            file_stale = True
+            syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file does not exist: %s" % (self.local_file_path))
+        
+        if file_stale:
+            try:
+                data = urlopen(self.json_file).read()
+                with open(self.local_file_path, 'w') as f:
+                    f.write(data)
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file downloaded: %s" % (self.json_file))
+                self.root = json.load(open(self.local_file_path, "r"))
+            except IOError, e:
+                syslog.syslog(syslog.LOG_ERR, "aussearch: cannot download json file %s: %s" % (self.json_file, e))
+
+        if self.root is not None:
+            self.root_node = JSONNode(self.root)
+    
+    @property
+    def jsonFile(self):
+        """Return the json_file we are using"""
+        return self.json_file
+     
+    def __getattr__(self, key_or_index):
+        # This is to get around bugs in the Python version of Cheetah's namemapper:
+        if key_or_index in ['__call__', 'has_key']:
+            raise AttributeError
+        
+        if self.root_node is not None:
+            return getattr(self.root_node, key_or_index)
+        else:
+            raise AttributeError
+
+class JSONNode(object):
+    def __init__(self, node):
+        self.node = node
+    
+    def __call__(self, key_or_index):
+        return self.walk(key_or_index)
+          
+    def walk(self, key_or_index):
+        """Walk the json data"""
+        childNode = None
+
+        if isinstance(self.node, dict):
+            try:
+                childNode = self.node[key_or_index]
+            except KeyError:
+                raise AttributeError
+        elif isinstance(self.node, list):
+            try:
+                index = int(key_or_index)
+                childNode = self.node[index]
+            except ValueError:
+                pass
+            except IndexError:
+                raise AttributeError
+
+            if childNode is None:
+                try:
+                    childNode = self.node[0][key_or_index]
+                except KeyError:
+                    raise AttributeError
+        else:
+            raise AttributeError
+
+        return JSONNode(childNode) if childNode is not None else None
+    
+    def toString(self, addLabel=True, useThisFormat=None, NONE_string=None):
+        #TODO: What to do here? We are not dealing with value tuples. YET!
+        return str(self.node) if self.node is not None else NONE_string
+        
+    def __str__(self):
+        """Return as string"""
+        return self.toString()
+    
+    @property
+    def string(self, NONE_string=None):
+        """Return as string with an optional user specified string to be
+        used if None"""
+        return self.toString(NONE_string=NONE_string)
+    
+    def __getattr__(self, key_or_index):
+        key_or_index = key_or_index.replace("__", "-")
+         
+        return self.walk(key_or_index)
