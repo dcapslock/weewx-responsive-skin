@@ -206,7 +206,7 @@ class ausutils(SearchList):
             DT = datetime.datetime.fromtimestamp(TS)
             if DT.month >= 10 or DT.month <= 3:
                 # October to March - 'Summer'
-                if DT.hour >= 9 and DT.hour <= 21:
+                if DT.hour >= 9 and DT.hour < 21:
                     #Daytime
                     feelslikeLookup = self.feelslikeLocal['DaySummer'] 
                 else:
@@ -214,7 +214,7 @@ class ausutils(SearchList):
                     feelslikeLookup = self.feelslikeLocal['NightSummer']
             else:
                 # April to September - 'Winter'
-                if DT.hour >= 9 or DT.hour <= 21:
+                if DT.hour >= 9 or DT.hour < 21:
                     #Daytime
                     feelslikeLookup = self.feelslikeLocal['DayWinter']
                 else:
