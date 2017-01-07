@@ -32,6 +32,16 @@
         });
       });//]]>
     </script>
+    #if $Extras.has_key('use_thunderstorms') and $Extras.use_thunderstorms == '1'
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/locale/en-au.js"></script> 
+    <script type="text/javascript" src="./trac.js"></script>
+    <script type="text/javascript">
+    jQuery(window).load(function () {
+        trac("$Extras.thunderstorm_file", "#storm-trac");
+    });
+    </script>
+    #end if
   </head>
   <body>
     <div class="container-fluid">
@@ -428,7 +438,7 @@
             ## See index-forecast.tmpl for more information
             ## Forecast Accordian is collapseAccTwoFive
             #include "index-forecast.tmpl"
-            #if $Extras.has_key('use_warn')
+            #if $Extras.has_key('use_warn') and $Extras.use_warn == '1'
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
@@ -471,16 +481,35 @@
               </div>
             </div>
             #end if
-            #if $Extras.has_key('webcam_img')
+            #if $Extras.has_key('use_thunderstorms') and $Extras.use_thunderstorms == '1'
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
                   <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoSeven">
-                    Webcam
+                    Thunderstorms
                   </a>
                 </h4>
               </div>
               <div class="panel-collapse collapse" id="collapseAccTwoSeven">
+                <div class="panel-body">
+                  <div id="storm-trac"><p>Storm Data Not Available</p></div>
+                  <h6><small>
+                  <a href="$Extras.thunderstorm_cite_link" target="_blank">$Extras.thunderstorm_cite</a>
+                  </small></h6>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('webcam_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoEight">
+                    Webcam
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoEight">
                 <div class="panel-body">
                   <a href="$Extras.webcam_url">
                     <img src="$Extras.webcam_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Webcam" />
@@ -490,16 +519,16 @@
               </div>
             </div>
             #end if
-            #if $Extras.has_key('use_bomobs')
+            #if $Extras.has_key('use_bomobs') and $Extras.use_bomobs == '1'
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
-                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoEight">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoNine">
                    Observations (BOM)
                   </a>
                 </h4>
               </div>
-              <div class="panel-collapse collapse" id="collapseAccTwoEight">
+              <div class="panel-collapse collapse" id="collapseAccTwoNine">
                 <div class="panel-body">
                   <h6>
                     <small>
@@ -535,16 +564,16 @@
               </div>
             </div>
             #end if
-            #if $Extras.has_key('use_almanac')
+            #if $Extras.has_key('use_almanac') and $Extras.use_almanac == '1'
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
-                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoNine">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoTen">
                     Almanac
                   </a>
                 </h4>
               </div>
-              <div class="panel-collapse collapse" id="collapseAccTwoNine">
+              <div class="panel-collapse collapse" id="collapseAccTwoTen">
                 <div class="panel-body">
                   <h4>Sun</h4>
                   <table class="table table-condensed table-responsive">
@@ -666,12 +695,12 @@
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
-                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoTen">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoEleven">
                     About
                   </a>
                 </h4>
               </div>
-              <div class="panel-collapse collapse" id="collapseAccTwoTen">
+              <div class="panel-collapse collapse" id="collapseAccTwoEleven">
                 <div class="panel-body">
                   <table class="table table-condensed table-responsive">
                     <thead>
