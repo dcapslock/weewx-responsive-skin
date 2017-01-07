@@ -1,7 +1,7 @@
-var reTracInfo      = /NexStorm TRAC Report generated ([0-9]{1,}.[0-9]{1,}.[0-9]{1,}) ([0-9]{1,}:[0-9]{1,}:[0-9]{1,})/
+var reTracInfo      = /NexStorm TRAC Report generated ([0-9]{1,}\/[0-9]{1,}\/[0-9]{1,}) ([0-9]{1,}:[0-9]{1,}:[0-9]{1,} ((AM)|(PM)))/
 var reTracNumStorms = /Tracking ([0-9]{1,}) thunderstorms/
 var reTracStorms    = /^-----.*$(\r\n)(.*\r\n){20}^-----.*$\r\n/gm
-var reStormIDTime   = /ID.([A-Za-z0-9-]+).detected.([0-9]+:[0-9]+)/
+var reStormIDTime   = /ID.([A-Za-z0-9-]+).detected.([0-9]+:[0-9]+ ((AM)|(PM)))/
 var reStormBearDist = /bearing.([0-9]+[\.]?[0-9]?).dgr.distance.([0-9]+).km/
 var reStormLastAct  = /Last recorded activity\s+([0-9]+:[0-9]+)/
 var reStormIntsCls  = /Intensity.class\s+([A-Za-z]+)/
@@ -69,8 +69,8 @@ function tracSuccess( data ) {
     //In this case tracData will be an empty array
     TracInfo = reTracInfo.exec(data);
     if (TracInfo !== null) {
-        tracData['ReportDate'] = moment(TracInfo[1], "DD.MM.YYYY");
-        tracData['ReportTime'] = moment(TracInfo[2], "HH:mm:ss");
+        tracData['ReportDate'] = moment(TracInfo[1], "MM/DD/YYYY");
+        tracData['ReportTime'] = moment(TracInfo[2], "hh:mm:ss A");
 
         TracNumStorms = reTracNumStorms.exec(data);
         if (TracNumStorms !== null) {
@@ -92,7 +92,7 @@ function tracSuccess( data ) {
                 stormID = StormIDTime[1];
                 tracData[tracStorms][stormID] = [];
                 tracData[tracStorms][stormID]['ID'] = stormID;
-                tracData[tracStorms][stormID]['Time'] = StormIDTime[2];
+                tracData[tracStorms][stormID]['Time'] = moment(StormIDTime[2], "hh:mm A");
             }
             else {
                 // Can't find ID so can't set up array. Stop parsing
@@ -146,14 +146,14 @@ function trac(tracFile, tracDiv) {
         if ('TracNumStorms' in tracData) {
             outputHTML = '<h6><small>StormTRAC report generated at {0} {1}</small></h6>'.format(tracData['ReportTime'].format("hh:mmA"), tracData['ReportDate'].format("ddd D MMM YYYY"));
             outputHTML += '<table class="table table-condensed table-responsive"><tbody>';
-            outputHTML += '<tr><td class="text-primary" colspan="6">Tracking {0} thunderstorms</tr>'.format(tracData['TracNumStorms']);
+            outputHTML += '<tr><td class="text-primary" colspan="6">Tracking {0} thunderstorm{1}</tr>'.format(tracData['TracNumStorms'], (tracData['TracNumStorms'] > 1) ? "s" : "");
             outputHTML += '<tr><td><strong></strong></td><td><strong>TZero</strong></td><td><strong>Distance</strong></td><td><strong>Bearing</strong></td><td class="text-right"><strong><span class="glyphicon glyphicon-flash"></span>/min</strong></td><td class="text-right"><strong><span class="glyphicon glyphicon-flash"></span><span class="glyphicon glyphicon-cloud"></span></strong></td></tr>';
 
             var i=1;
             for (var key in tracData['TracStorms']) {
                 storm = tracData['TracStorms'][key];
                 outputHTML += '<tr {0}><td>{1}</td><td>{2}</td><td>{3} km</td><td>{4}</td><td class="text-right">{5}</td><td class="text-right">{6}</td>'.format(
-                                getIntensityRowBgColour(storm['IntensityClass']), i, storm['Time'], storm['Distance'], getShortName(calcCompassPoint(storm['Bearing'])),
+                                getIntensityRowBgColour(storm['IntensityClass']), i, storm['Time'].format("H:mm"), storm['Distance'], getShortName(calcCompassPoint(storm['Bearing'])),
                                 storm['CurrentSR'], getIntensityStr(storm['IntensityClass']) + getTrendStr(storm['IntensityTrend']));
                 i += 1;
             };
