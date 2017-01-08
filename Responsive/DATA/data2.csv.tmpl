@@ -33,13 +33,13 @@
 #set $vws_RAD = $current.radiation.nolabel("%.1f","")
 #set $vws_DEWP = $current.dewpoint.nolabel("%.1f","")
 #set $vws_RAINRATE = $current.rainRate.nolabel("%.1f","")
-#if $current.apptemp.has_data
-#set $vws_CHILLAPPTEMP = $current.apptemp.nolabel("%.1f","")
+#if $current.appTemp.has_data
+#set $vws_CHILLAPPTEMP = $current.appTemp.nolabel("%.1f","")
 #else
 #set $vws_CHILLAPPTEMP = $current.windchill.nolabel("%.1f","")
 #end if
-#if $current.apptemp.has_data
-#set $vws_HEATAPPTEMP = $current.apptemp.nolabel("%.1f","")
+#if $current.appTemp.has_data
+#set $vws_HEATAPPTEMP = $current.appTemp.nolabel("%.1f","")
 #else
 #set $vws_HEATAPPTEMP = $current.heatindex.nolabel("%.1f","")
 #end if

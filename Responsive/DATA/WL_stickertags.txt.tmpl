@@ -1,0 +1,48 @@
+#errorCatcher Echo
+## Template file for providing data to Australian Weather Network
+## Based on template file for Weather Link as per instructions
+## at http://www.australiawx.net/instructions.php
+## and tamplate file at http://www.australiawx.net/WL_stickertags.txt
+## Trends based on time_delta in skin.conf
+## Assuming wind10Avg and windAvg10 are similar and using windSpeed
+## which is usually an average of some kind.
+#set $blank = ""
+#set $WL_DATE = $current.dateTime.format("%d/%m/%Y")
+#set $WL_TIME = $current.dateTime.format("%H:%M:%S")
+#set $WL_WIND = $current.windSpeed.nolabel("%.1f","")
+#set $WL_WINDGUST = $current.windGust.nolabel("%.1f","")
+#set $WL_WINDDIR = $current.windDir.ordinal_compass
+#set $WL_OUTHUM = $current.outHumidity.nolabel("%.1f","")
+#set $WL_OUTTEMP = $current.outTemp.nolabel("%.1f","")
+#set $WL_BAROM = $current.barometer.nolabel("%.1f","")
+#set $WL_BRAOM_TREND = $trend.barometer.nolabel("%.1f","")
+#if $WL_BRAOM_TREND > 0
+#set $WL_BAROM_TREND_TXT = "Rising"
+#else if $WL_BRAOM_TREND < 0
+#set $WL_BAROM_TREND_TXT = "Falling"
+#else
+#set $WL_BAROM_TREND_TXT = "Steady"
+#end if
+#set $WL_DAYRAIN = $day.rain.sum.nolabel("%.1f","")
+#set $WL_DEWP = $current.dewpoint.nolabel("%.1f","")
+#if $current.appTemp.has_data
+#set $WL_CHILLAPPTEMP = $current.appTemp.nolabel("%.1f","")
+#else
+#set $WL_CHILLAPPTEMP = $current.windchill.nolabel("%.1f","")
+#end if
+#if $current.appTemp.has_data
+#set $WL_HEATAPPTEMP = $current.appTemp.nolabel("%.1f","")
+#else
+#set $WL_HEATAPPTEMP = $current.heatindex.nolabel("%.1f","")
+#end if
+#set $WL_SUNRISE = $almanac.sun.rise.format("%H:%M:%S")
+#set $WL_SUNSET = $almanac.sun.set.format("%H:%M:%S")
+##
+##<!--stationTime-->,<!--stationDate-->,<!--outsideTemp-->,<!--outsideHeatIndex-->,<!--windChill-->,<!--outsideHumidity-->,
+##        1                  2                   3                    4                   5                   6            
+##<!--outsideDewPt-->,<!--barometer-->,<!--BarTrend-->,<!--wind10Avg-->,<!--windDirection-->,<!--dailyRain-->,-,
+##         7                  8               9                10                11                  12       13
+##<!--sunriseTime-->,<!--sunsetTime-->,<!--windAvg10-->,<!--windHigh10-->,<!--tempUnit-->|<!--windUnit-->|<!--barUnit-->|<!--rainUnit-->
+##        14                15                16               17               18               19             20             21
+##1      2        3           4                5                6          7        8         9                   10       11          12        13 14          15         16       17           18-21
+$WL_TIME,$WL_DATE,$WL_OUTTEMP,$WL_HEATAPPTEMP,$WL_CHILLAPPTEMP,$WL_OUTHUM,$WL_DEWP,$WL_BAROM,$WL_BAROM_TREND_TXT,$WL_WIND,$WL_WINDDIR,$WL_DAYRAIN,,$WL_SUNRISE,$WL_SUNSET,$WL_WIND,$WL_WINDGUST,C|kmh|hPa|mm
