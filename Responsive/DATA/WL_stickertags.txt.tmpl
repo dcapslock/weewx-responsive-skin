@@ -20,7 +20,7 @@
 #set $WL_BRAOM_TREND = $trend.barometer.raw
 #if $WL_BRAOM_TREND >= 2.0
 #set $WL_BAROM_TREND_TXT = "Rising Rapidly"
-#else if $WL_BRAOM_TREND > 0.7
+#else if $WL_BRAOM_TREND >= 0.7
 #set $WL_BAROM_TREND_TXT = "Rising Slowly"
 #else if $WL_BRAOM_TREND <= -2.0
 #set $WL_BAROM_TREND_TXT = "Falling Rapidly"
