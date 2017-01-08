@@ -6,6 +6,8 @@
 ## Trends based on time_delta in skin.conf
 ## Assuming wind10Avg and windAvg10 are similar and using windSpeed
 ## which is usually an average of some kind.
+## Using Barometer trend words found in Davis VP Manual
+## http://www.davisnet.com/product_documents/weather/manuals/07395-234_IM_06312.pdf
 #set $blank = ""
 #set $WL_DATE = $current.dateTime.format("%d/%m/%Y")
 #set $WL_TIME = $current.dateTime.format("%H:%M:%S")
@@ -15,11 +17,15 @@
 #set $WL_OUTHUM = $current.outHumidity.nolabel("%.1f","")
 #set $WL_OUTTEMP = $current.outTemp.nolabel("%.1f","")
 #set $WL_BAROM = $current.barometer.nolabel("%.1f","")
-#set $WL_BRAOM_TREND = $trend.barometer.nolabel("%.1f","")
-#if $WL_BRAOM_TREND > 0
-#set $WL_BAROM_TREND_TXT = "Rising"
-#else if $WL_BRAOM_TREND < 0
-#set $WL_BAROM_TREND_TXT = "Falling"
+#set $WL_BRAOM_TREND = $trend.barometer.raw
+#if $WL_BRAOM_TREND >= 2.0
+#set $WL_BAROM_TREND_TXT = "Rising Rapidly"
+#else if $WL_BRAOM_TREND > 0.7
+#set $WL_BAROM_TREND_TXT = "Rising Slowly"
+#else if $WL_BRAOM_TREND <= -2.0
+#set $WL_BAROM_TREND_TXT = "Falling Rapidly"
+#else if $WL_BRAOM_TREND <= -0.7
+#set $WL_BAROM_TREND_TXT = "Falling Slowly"
 #else
 #set $WL_BAROM_TREND_TXT = "Steady"
 #end if
