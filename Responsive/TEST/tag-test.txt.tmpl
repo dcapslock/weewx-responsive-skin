@@ -1,0 +1,23 @@
+## Daily Top Temperatures
+## #for $iterDay in $last_week.days
+## $iterDay.dateTime.format("%A %-d %B"): $iterDay.outTemp.max at $iterDay.outTemp.maxtime
+## #end for
+Daily Top Temperatures
+#for $iterDay in $last_week.days
+$iterDay.dateTime.format("%A %-d %B"): $iterDay.outTemp.max at $iterDay.outTemp.maxtime
+#end for
+
+## All Day Values
+## #for $record in $last_day.records
+## $record.dateTime.format("%d/%m %H:%M:%S"),$record.outTemp,$record.outHumidity,$record.appTemp
+## #end for
+All Day Values
+#for $record in $last_day.records
+$record.dateTime.format("%d/%m %H:%M:%S"),$record.outTemp,$record.outHumidity,$record.appTemp
+#end for
+
+## 3 hour average over last day
+3 hour average over last day
+#for $span in $last_day.spans(interval=10800)
+$span.dateTime.format("%d/%m %H:%M:%S"),$span.outTemp.avg,$span.outHumidity.avg,$span.appTemp.avg
+#end for

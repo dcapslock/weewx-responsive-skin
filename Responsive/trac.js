@@ -65,7 +65,7 @@ function tracSuccess( data ) {
     var StormCurrSR, StormPeakSR, StormTotStrk, StormCGStrk, StormICStrk, StormPosCG, StormNegCG, StormPosIC, StormNegIC;
     var stormData, stormID, tracData = {}, tracStorms = 'TracStorms';
 
-    //If header is not present this wil not match meaning no storms.
+    //If header is not present this will not match meaning no storms.
     //In this case tracData will be an empty array
     TracInfo = reTracInfo.exec(data);
     if (TracInfo !== null) {
