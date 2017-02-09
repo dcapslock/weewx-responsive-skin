@@ -57,7 +57,7 @@ function getIntensityRowBgColour(intensity) {
 }
 
 function getTrendStr(trend) {
-    return trend.r(/intensifying/gi, '\u25B2').r(/weakening/gi, '\u25BC').r(/no change/gi, '\u25BA');
+    return trend.r(/intensifying/gi, '\u25B2').r(/weakening/gi, '\u25BC').r(/no change/gi, '\u25BA').r(/undetermined/gi, '?');
 }
 
 function tracSuccess( data ) {
@@ -65,12 +65,12 @@ function tracSuccess( data ) {
     var StormCurrSR, StormPeakSR, StormTotStrk, StormCGStrk, StormICStrk, StormPosCG, StormNegCG, StormPosIC, StormNegIC;
     var stormData, stormID, tracData = {}, tracStorms = 'TracStorms';
 
-    //If header is not present this will not match meaning no storms.
+    //If header is not present this wil not match meaning no storms.
     //In this case tracData will be an empty array
     TracInfo = reTracInfo.exec(data);
     if (TracInfo !== null) {
-        tracData['ReportDate'] = moment(TracInfo[1], "MM/DD/YYYY");
-        tracData['ReportTime'] = moment(TracInfo[2], "hh:mm:ss A");
+        tracData['ReportDate'] = moment(TracInfo[1], "DD/MM/YYYY");
+        tracData['ReportTime'] = moment(TracInfo[2], "H:mm:ss a");
 
         TracNumStorms = reTracNumStorms.exec(data);
         if (TracNumStorms !== null) {
@@ -92,7 +92,7 @@ function tracSuccess( data ) {
                 stormID = StormIDTime[1];
                 tracData[tracStorms][stormID] = [];
                 tracData[tracStorms][stormID]['ID'] = stormID;
-                tracData[tracStorms][stormID]['Time'] = moment(StormIDTime[2], "hh:mm A");
+                tracData[tracStorms][stormID]['Time'] = moment(StormIDTime[2], "H:mm");
             }
             else {
                 // Can't find ID so can't set up array. Stop parsing
