@@ -237,26 +237,36 @@ class XmlFileHelper(object):
         self.local_file_path = os.path.join(searcher.cache_root, self.local_file)
         
         if os.path.exists(self.local_file_path):
-            self.dom = ET.parse(open(self.local_file_path, "r"))
-            self.root = self.dom.getroot()
-            file_stale = False 
+            try:
+                self.dom = ET.parse(open(self.local_file_path, "r"))
+                self.root = self.dom.getroot()
+            except ET.ParseError, e:
+                syslog.syslog(syslog.LOG_ERR, "aussearch: bad cache xml file %s: %s" % (self.local_file_path, e))
+                self.root = None
 
-            nextIssue = self.root.find('amoc/next-routine-issue-time-utc')
-            if nextIssue is not None:
-                check_datetime = dateutil.parser.parse(nextIssue.text) + datetime.timedelta(seconds=searcher.staleness_time)
-                # For completeness we need to make sure that we are comparing timezone aware times
-                # since the parse of next-routine-issue-time-utc wil return a timezone aware time
-                # hence we pass a utc timezone to get the current utc time as a timezone aware time
-                # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
-                now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
-                
-                if now_datetime >= check_datetime:
-                    file_stale = True
+            if self.root is not None:
+                file_stale = False 
+
+                nextIssue = self.root.find('amoc/next-routine-issue-time-utc')
+                if nextIssue is not None:
+                    check_datetime = dateutil.parser.parse(nextIssue.text) + datetime.timedelta(seconds=searcher.staleness_time)
+                    # For completeness we need to make sure that we are comparing timezone aware times
+                    # since the parse of next-routine-issue-time-utc wil return a timezone aware time
+                    # hence we pass a utc timezone to get the current utc time as a timezone aware time
+                    # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
+                    now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check xml file: %s expires %s" % (self.local_file_path, check_datetime))
+                    
+                    if now_datetime >= check_datetime:
+                        file_stale = True
+                        syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file is stale: %s" % (self.local_file_path))
+                else:
+                    check_datetime = datetime.datetime.utcfromtimestamp(os.path.getmtime(self.local_file_path)) + datetime.timedelta(seconds=searcher.staleness_time)
+                    now_datetime = datetime.datetime.utcnow()
+                    if now_datetime >= check_datetime:
+                        file_stale = True
             else:
-                check_datetime = datetime.datetime.utcfromtimestamp(os.path.getmtime(self.local_file_path)) + datetime.timedelta(seconds=searcher.staleness_time)
-                now_datetime = datetime.datetime.utcnow()
-                if now_datetime >= check_datetime:
-                    file_stale = True
+                file_stale = True
         else:
             file_stale = True
 
@@ -265,10 +275,12 @@ class XmlFileHelper(object):
                 data = urlopen(self.xml_file).read()
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file downloaded: %s" % (self.xml_file))
                 self.dom = ET.parse(open(self.local_file_path, "r"))
                 self.root = self.dom.getroot()
             except IOError, e:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: cannot download xml file %s: %s" % (self.xml_file, e))
+                self.root = None
         
         if self.root is not None:
             self.root_node = XMLNode(self.root)
