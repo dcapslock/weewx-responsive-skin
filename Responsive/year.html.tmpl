@@ -11,8 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-    rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="weewx-responsive.css" rel="stylesheet">
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -61,7 +60,7 @@
                   </div>
                   #if $year.appTemp.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="yearappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                    <img src="yearappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="app. temp" />
                   </div>
                   #end if
                   #if $year.heatindex.has_data or $year.windchill.has_data
@@ -73,7 +72,7 @@
                     <img src="yearrain.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="rain" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="yearwind.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="wind" />
+                    <img src="yearwind.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="wind" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <img src="yearbarometer.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="barometer"/>
@@ -173,8 +172,8 @@
                       <tr>
                         <td style="border-bottom: none;">High Barometer</td>
                         <td style="border-bottom: none;">$year.barometer.max at $year.barometer.maxtime</td>
-                      <tr>
                       </tr>
+                      <tr>
                         <td style="border-top: none;">Low Barometer</td>
                         <td style="border-top: none;">$year.barometer.min at $year.barometer.mintime</td>
                       </tr>
@@ -262,7 +261,7 @@
                         <td style="border-bottom: none;">Low ET</td>
                       </tr>
                       <tr>
-                        <td style="border-top: none;">$year.ET.max at $year.ET.maxtime<td/>
+                        <td style="border-top: none;">$year.ET.max at $year.ET.maxtime</td>
                         <td style="border-top: none;">$year.ET.min at $year.ET.mintime</td>
                       </tr>
                       #end if
