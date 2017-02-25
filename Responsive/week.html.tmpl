@@ -11,13 +11,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
-    rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="weewx-responsive.css" rel="stylesheet">
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <link rel="icon" type="image/png" href="favicon.ico">
-    <script type='text/javascript'>//<![CDATA[ 
+    <script type='text/javascript'>//<![CDATA[
       jQuery(window).load(function(){
         jQuery('div.btn-group ul.dropdown-menu li a').on('click', function (e) {
             var url = "NOAA/NOAA-";
@@ -61,7 +60,7 @@
                   </div>
                   #if $week.appTemp.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="weekappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                    <img src="weekappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="app. temp" />
                   </div>
                   #end if
                   #if $week.heatindex.has_data or $week.windchill.has_data
@@ -73,7 +72,7 @@
                     <img src="weekrain.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="rain" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="weekwind.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="wind" />
+                    <img src="weekwind.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="wind" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <img src="weekbarometer.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="barometer"/>
@@ -173,8 +172,8 @@
                       <tr>
                         <td style="border-bottom: none;">High Barometer</td>
                         <td style="border-bottom: none;">$week.barometer.max at $week.barometer.maxtime</td>
-                      <tr>
                       </tr>
+                      <tr>
                         <td style="border-top: none;">Low Barometer</td>
                         <td style="border-top: none;">$week.barometer.min at $week.barometer.mintime</td>
                       </tr>
@@ -262,7 +261,7 @@
                         <td style="border-bottom: none;">Low ET</td>
                       </tr>
                       <tr>
-                        <td style="border-top: none;">$week.ET.max at $week.ET.maxtime<td/>
+                        <td style="border-top: none;">$week.ET.max at $week.ET.maxtime</td>
                         <td style="border-top: none;">$week.ET.min at $week.ET.mintime</td>
                       </tr>
                       #end if
@@ -340,8 +339,8 @@
                       <tr>
                         <td style="border-bottom: none;">High Barometer</td>
                         <td style="border-bottom: none;">$month.barometer.max at $month.barometer.maxtime</td>
-                      <tr>
                       </tr>
+                      <tr>
                         <td style="border-top: none;">Low Barometer</td>
                         <td style="border-top: none;">$month.barometer.min at $month.barometer.mintime</td>
                       </tr>
@@ -430,7 +429,7 @@
                         <td style="border-bottom: none;">Low ET</td>
                       </tr>
                       <tr>
-                        <td style="border-top: none;">$month.ET.max at $month.ET.maxtime<td/>
+                        <td style="border-top: none;">$month.ET.max at $month.ET.maxtime</td>
                         <td style="border-top: none;">$month.ET.min at $month.ET.mintime</td>
                       </tr>
                       #end if

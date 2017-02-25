@@ -74,7 +74,7 @@
                   </div>
                   #if $day.appTemp.has_data
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="dayappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="app. temp" />
+                    <img src="dayappTemp.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="app. temp" />
                   </div>
                   #end if
                   #if $day.heatindex.has_data or $day.windchill.has_data
@@ -86,7 +86,7 @@
                     <img src="dayrain.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="rain" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
-                    <img src="daywind.png" class="center-block img-responsive" style="padding-bottom: 5px;" lt="wind" />
+                    <img src="daywind.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="wind" />
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-6">
                     <img src="daybarometer.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="barometer" />
@@ -287,7 +287,7 @@
                       <tr>
                         <td style="border-bottom: none;">High Barometer</td>
                         <td style="border-bottom: none;">$day.barometer.max at $day.barometer.maxtime</td>
-                      <tr>
+                      </tr>
                       <tr>
                         <td style="border-top: none;">Low Barometer</td>
                         <td style="border-top: none;">$day.barometer.min at $day.barometer.mintime</td>
@@ -376,8 +376,7 @@
                         <td style="border-bottom: none;">Low ET</td>
                       </tr>
                       <tr>
-                        <td style="border-top: none;">$day.ET.max at $day.ET.maxtime
-                        <td />
+                        <td style="border-top: none;">$day.ET.max at $day.ET.maxtime</td>
                         <td style="border-top: none;">$day.ET.min at $day.ET.mintime</td>
                       </tr>
                       #end if
@@ -843,6 +842,8 @@
         </div>
       </div>
     </div>
+      <div><h4 class="text-center">Location</h4>
+      </div>
     ## Include the Google Analytics code if the user has supplied an ID:
     #if $Extras.has_key('googleAnalyticsId')
     <script type="text/javascript">
