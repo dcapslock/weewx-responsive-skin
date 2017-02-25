@@ -1,0 +1,360 @@
+﻿#errorCatcher Echo
+##
+## Specifying an encoding of UTF-8 is usually safe, but if your text is 
+## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
+#encoding UTF-8
+#import dateutil.parser
+##
+## Australian Storms Page
+##
+## Assumes Boltek 
+##
+## Summary forecast included on left hand side
+## Depending of your location and XML file in skin.conf
+## you will need to adjust this file in a few places
+##
+## Radar and Satellite included
+##
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>$station.location Weather - Storms</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Storms ans lightning for Carlingford, NSW, Australia.">
+    <meta name="author" content="">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="weewx-responsive.css" rel="stylesheet">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    #if $Extras.has_key('thunderstorm_dynamic')
+    ## START CODE FROM STORM STATION 5
+    ## MODIFIED AS PER BELOW
+    ##   MOD1: add base directory as SS5 assumes for all includes like CSS, JS, IMAGES
+    <base href="$Extras.thunderstorm_dynamic" target="_blank">
+    <link rel="stylesheet" href="css/leaflet.css" type="text/css">
+    <link rel="stylesheet" href="css/MarkerCluster.css" type="text/css">
+    <link rel="stylesheet" href="css/custom.css" type="text/css">
+    ## END CODE FROM STORM STATION 5
+    #end if
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <script type='text/javascript'>//<![CDATA[ 
+      jQuery(window).load(function(){
+        jQuery('div.btn-group ul.dropdown-menu li a').on('click', function (e) {
+            var url = "NOAA/NOAA-";
+            
+            e.preventDefault(); // prevent the default anchor functionality
+            url = url + jQuery(e.target).closest('a').data('file');
+            url = url + ".txt";
+            window.open(url, '_blank');
+        });
+      });//]]>
+    </script>		
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/locale/en-au.js"></script> 
+    <script type="text/javascript" src="$station.station_url/trac.js"></script>
+    <script type="text/javascript">
+    jQuery(window).load(function () {
+        trac("$Extras.thunderstorm_file", "#storm-trac");
+    });
+    </script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row panel panel-primary">
+        <div class="col-md-12 panel-heading">
+          <div class="col-md-6">
+            <h4><a href="$station.station_url"><span class="glyphicon glyphicon-home" style="color: white"></span></a>&nbsp;&nbsp;$station.location Weather - Storms</h4>
+          </div>
+          <div class="col-md-6 text-right">
+            <h4 class="text-right">$current.dateTime</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-8 col-md-push-4 col-lg-6 col-lg-push-3">
+          <div class="row panel-group" id="accordianOne">
+            #if $Extras.has_key('thunderstorm_dynamic')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordianOne" href="#collapseAccOneOne"
+                     draggable="true">Dynamic lightning tracker</a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccOneOne">
+                <div class="panel-body">
+                    ## START CODE FROM STORM STATION 5
+                    ## MODIFIED AS PER BELOW
+                    ##   MOD1: resize listener to call SS5 ResetPanels()
+                    ##   MOD2: Place JS at end of page to allow rest to load first
+                    <div id="centerPage">
+                    <div tabindex="0" class="leaflet-container leaflet-fade-anim" id="map" style="left: 0px; top:0px; width: 100%; height: 600px; position: relative; background-color: black;">
+                        <canvas id="pnlClockCanvas" width="220" height="30" style="z-index: 2; position:relative; left:5px; top:5px;">
+                            Your browser does not support HTML5 Canvas.
+                        </canvas>
+
+                        <canvas id="pnlCanvas" width="245" height="330" style="z-index: 2; position:relative; top:5px;">
+                            Your browser does not support HTML5 Canvas.
+                        </canvas>
+
+                        <canvas id="pnlSymCanvas" width="245" height="65" style="z-index: 2; position:relative; top:340px;">
+                            Your browser does not support HTML5 Canvas.
+                        </canvas>
+                    </div>
+                    </div>
+                    ## END CODE FROM STORM STATION 5
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('thunderstorm_static')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordianOne" href="#collapseAccOneTwo"
+                     draggable="true">Static lightning tracker</a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccOneTwo">
+                <div class="panel-body">
+                    <img src="$Extras.thunderstorm_static" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Static lightning" />
+                    <h6><small>$Extras.thunderstorm_static_cite</small></h6>
+                </div>
+              </div>
+            </div>
+            #end if
+          </div>
+        </div>
+        <div class="col-md-4 col-md-pull-8 col-lg-3 col-lg-pull-6 col-min-padding">
+          <div class="panel-group" id="accordionTwo">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoOne">
+                    Thunderstorms
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse in" id="collapseAccTwoOne">
+                <div class="panel-body">
+                  <div id="storm-trac"><p>Storm Data Not Available</p></div>
+                </div>
+              </div>
+            </div>
+            #if $Extras.has_key('use_warn') and $Extras.use_warn == '1'
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoTwo">
+                    Warnings
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoTwo">
+                <div class="panel-body">
+                  <h6><small>$aus.WARNINGS.channel.title</small></h6>
+                  <table class="table table-condensed table-responsive">
+                    <tbody>
+                      <tr>
+                        <td class="text-primary">Current Warnings</td>
+                      </tr>
+                      #if $aus.WARNINGS.channel.getNode('item[1]') is None
+                      <tr>
+                        <td>
+                          None
+                        </td>
+                      </tr>
+                      #end if
+                      ## Assume there would be no more than 20 concurrent warnings
+                      ## Not using While in case XML breaks in some way and we get stuck in a loop
+                      #for $wnCount in range(1,21)
+                      #set $wnIndex = '[' + str($wnCount) +']'
+                      #if $aus.WARNINGS.channel.getNode('item'+$wnIndex) is None
+                      #break
+                      #end if
+                      <tr>
+                        <td>
+                          <a href="$aus.WARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.WARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                        </td>
+                      </tr>
+                      #end for
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('webcam_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoThree">
+                    Webcam
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoThree">
+                <div class="panel-body">
+                  <a href="$Extras.webcam_url">
+                    <img src="$Extras.webcam_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Webcam" />
+                  </a>
+                  <p class="text-center">Click on the image above for the Webcam page</p>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('radar_img')
+            <div class="hidden-lg panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoFour">
+                    Radar
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoFour">
+                <div class="panel-body">
+                  <a href="$Extras.radar_url" target="_blank">
+                    <img src="$Extras.radar_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radar" />
+                  </a>
+                  <p class="text-center">Click on the image above for an hourly animation</p>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('satellite_img')
+            <div class="hidden-lg panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoFive">
+                    Satellite
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoFive">
+                <div class="panel-body">
+                  <a href="$Extras.satellite_url" target="_blank">
+                    <img src="$Extras.satellite_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Satellite" />
+                  </a>
+                  <p class="text-center">Click on the image above for a daily animation</p>
+                </div>
+              </div>
+            </div>
+            #end if
+          </div>
+        </div>
+        <div class="hidden-xs hidden-sm hidden-md col-lg-3 col-min-padding">
+          <div class="panel-group">
+            #if $Extras.has_key('radar_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  Radar
+                </h4>
+              </div>
+              <div class="panel">
+                <div class="panel-body">
+                  <a href="$Extras.radar_url" target="_blank">
+                    <img src="$Extras.radar_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Radar" />
+                  </a>
+                  <p class="text-center">Click on the image above for an hourly animation</p>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('satellite_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  Satellite
+                </h4>
+              </div>
+              <div class="panel">
+                <div class="panel-body">
+                  <a href="$Extras.satellite_url" target="_blank">
+                    <img src="$Extras.satellite_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Satellite" />
+                  </a>
+                  <p class="text-center">Click on the image above for a daily animation</p>
+                </div>
+              </div>
+            </div>
+            #end if
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="panel panel-primary col-xs-12 col-sm-12 col-md-12">
+          <div class="row voffset1 text-center">
+            <a class="btn btn-primary" href="index.html">Current</a>
+            <a class="btn btn-primary" href="week.html">Week</a>
+            <a class="btn btn-primary" href="month.html">Month</a>
+            <a class="btn btn-primary" href="year.html">Year</a>
+          </div>
+          <div class="row voffset1 text-center">
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Monthly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $monthYear in $SummaryByMonth
+                <li><a href="#" data-file="$monthYear">$monthYear</a></li>
+                #end for
+              </ul>
+            </div>
+            <div class="btn-group dropup">
+              <button class="btn btn-primary">Yearly Summary</button>
+              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu text-center" role="menu">
+                #for $yr in $SummaryByYear
+                <li><a href="#" data-file="$yr">$yr</a></li>
+                #end for
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ## Include the Google Analytics code if the user has supplied an ID:
+    #if $Extras.has_key('googleAnalyticsId')
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try{
+            var pageTracker = _gat._getTracker("$Extras.googleAnalyticsId");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+    #end if
+    #if $Extras.thunderstorm_dynamic
+    ## START CODE FROM STORM STATION 5
+    <script>L_PREFER_CANVAS = true;window.addEventListener("resize", OnResize);function OnResize() { ResetPanels(); }</script>
+    <script src="lib/leaflet_073mod.js"></script>
+    <script src="lib/leaflet.markercluster.js"></script>
+    <script src="lib/Leaflet.Geodesic.js"></script>
+
+    <script src="lib/extentsions.js"></script>
+    <script src="lib/preLoad.js"></script>
+    <script src="lib/symbols.js"></script>
+    <script src="lib/Counter.js"></script>
+    <script src="lib/Util.js"></script>
+    <script src="lib/ClockPanel.js"></script>
+    <script src="lib/DataPanel.js"></script>
+    <script src="lib/LegendPanel.js"></script>
+    <script src="lib/LegendPanelNC.js"></script>
+    <script src="options/mapProviders.js"></script>
+    <script src="lib/main.js"></script>
+    ## END CODE FROM STORM STATION 5
+    #end if
+  </body>
+</html>
