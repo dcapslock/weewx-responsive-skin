@@ -92,7 +92,7 @@ function tracSuccess( data ) {
                 stormID = StormIDTime[1];
                 tracData[tracStorms][stormID] = [];
                 tracData[tracStorms][stormID]['ID'] = stormID;
-                tracData[tracStorms][stormID]['Time'] = moment(StormIDTime[2], "H:mm");
+                tracData[tracStorms][stormID]['Time'] = moment(StormIDTime[2], "H:mm a");
             }
             else {
                 // Can't find ID so can't set up array. Stop parsing
@@ -144,7 +144,7 @@ function trac(tracFile, tracDiv) {
 
         //Update page DIV
         if ('TracNumStorms' in tracData) {
-            outputHTML = '<h6><small>StormTRAC report generated at {0} {1}</small></h6>'.format(tracData['ReportTime'].format("hh:mmA"), tracData['ReportDate'].format("ddd D MMM YYYY"));
+            outputHTML = '<h6><small>StormTRAC report generated at {0} {1}</small></h6>'.format(tracData['ReportTime'].format("H:mm"), tracData['ReportDate'].format("ddd D MMM YYYY"));
             outputHTML += '<table class="table table-condensed table-responsive"><tbody>';
             outputHTML += '<tr><td class="text-primary" colspan="6">Tracking {0} thunderstorm{1}</tr>'.format(tracData['TracNumStorms'], (tracData['TracNumStorms'] > 1) ? "s" : "");
             outputHTML += '<tr><td><strong></strong></td><td><strong>TZero</strong></td><td><strong>Distance</strong></td><td><strong>Bearing</strong></td><td class="text-right"><strong><span class="glyphicon glyphicon-flash"></span>/min</strong></td><td class="text-right"><strong><span class="glyphicon glyphicon-flash"></span><span class="glyphicon glyphicon-cloud"></span></strong></td></tr>';
@@ -166,5 +166,6 @@ function trac(tracFile, tracDiv) {
         }
 
         $(tracDiv).html(outputHTML);
+        setTimeout(function() { trac(tracFile, tracDiv); }, 60 * 1000);
     });
 }

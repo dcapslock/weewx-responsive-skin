@@ -7,8 +7,6 @@
 ##
 ## Australian Storms Page
 ##
-## Assumes Boltek 
-##
 ## Summary forecast included on left hand side
 ## Depending of your location and XML file in skin.conf
 ## you will need to adjust this file in a few places
@@ -31,13 +29,13 @@
     ## START CODE FROM STORM STATION 5
     ## MODIFIED AS PER BELOW
     ##   MOD1: add base directory as SS5 assumes for all includes like CSS, JS, IMAGES
-    <base href="$Extras.thunderstorm_dynamic" target="_blank">
+    <base href="$Extras.thunderstorm_dynamic">
     <link rel="stylesheet" href="css/leaflet.css" type="text/css">
     <link rel="stylesheet" href="css/MarkerCluster.css" type="text/css">
     <link rel="stylesheet" href="css/custom.css" type="text/css">
     ## END CODE FROM STORM STATION 5
     #end if
-    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="icon" type="image/png" href="$station.station_url/favicon.ico">
     <script type='text/javascript'>//<![CDATA[ 
       jQuery(window).load(function(){
         jQuery('div.btn-group ul.dropdown-menu li a').on('click', function (e) {
@@ -90,9 +88,9 @@
                     ## MODIFIED AS PER BELOW
                     ##   MOD1: resize listener to call SS5 ResetPanels()
                     ##   MOD2: Place JS at end of page to allow rest to load first
-                    <div id="centerPage">
-                    <div tabindex="0" class="leaflet-container leaflet-fade-anim" id="map" style="left: 0px; top:0px; width: 100%; height: 600px; position: relative; background-color: black;">
-                        <canvas id="pnlClockCanvas" width="220" height="30" style="z-index: 2; position:relative; left:5px; top:5px;">
+                    ##   MOD3: Set pnlClockCanvas at -1 z-index - we don't need and SS5 code leaves as is (but errors if removed)
+                    <div tabindex="0" class="leaflet-container leaflet-fade-anim" id="map" style="left: 0px; top:0px; width: 100%; height: 600px; position: relative; background-color: white;">
+                        <canvas id="pnlClockCanvas" width="220" height="30" style="z-index: -1; position:relative; left:5px; top:5px;">
                             Your browser does not support HTML5 Canvas.
                         </canvas>
 
@@ -104,8 +102,8 @@
                             Your browser does not support HTML5 Canvas.
                         </canvas>
                     </div>
-                    </div>
                     ## END CODE FROM STORM STATION 5
+                    <h6><small>$Extras.thunderstorm_dynamic_cite</small></h6>
                 </div>
               </div>
             </div>
