@@ -47,8 +47,18 @@
     <div class="container-fluid">
       <div class="row panel panel-primary">
         <div class="col-md-12 panel-heading">
-          <div class="col-md-6">
-            <h4>$station.location Weather</h4>
+          <div class="col-md-6 clearfix">
+            <h4>
+                <div class="pull-left">$station.location Weather</div>
+                <div class="pull-right">
+                    #if $Extras.has_key('use_warn') and $Extras.use_warn == '1'
+                    <a style="color: white;" href="#" data-toggle="tooltip" title="Severe weather warnings active"><span id="icon-severe" class="hidden glyphicon glyphicon-exclamation-sign"></span></a>
+                    #end if
+                    #if $Extras.has_key('use_thunderstorms') and $Extras.use_thunderstorms == '1'
+                    <a style="color: white;" href="#" data-toggle="tooltip" title="Thunderstorms active"><span id="icon-storm" class="hidden glyphicon glyphicon-flash"></span></a>
+                    #end if
+                </div>
+            </h4>
           </div>
           <div class="col-md-6 text-right">
             <h4 class="text-right">$current.dateTime</h4>
@@ -463,6 +473,7 @@
                       #end if
                       ## Assume there would be no more than 20 concurrent warnings
                       ## Not using While in case XML breaks in some way and we get stuck in a loop
+                      #set $severeWarning = False
                       #for $wnCount in range(1,21)
                       #set $wnIndex = '[' + str($wnCount) +']'
                       #if $aus.WARNINGS.channel.getNode('item'+$wnIndex) is None
@@ -471,9 +482,18 @@
                       <tr>
                         <td>
                           <a href="$aus.WARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.WARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                          ## Set sever icon in header if severe warnings i.e. "Severe Weather Warning" or "Severe Thunderstorm Warning"
+                          #if "Severe" in $aus.WARNINGS.channel.getNode('item'+$wnIndex).title.toString()
+                          #set $severeWarning = True
+                          #end if
                         </td>
                       </tr>
                       #end for
+                      #if $severeWarning is True
+                      <script type="text/javascript">
+                        jQuery("#icon-severe").removeClass("hidden");
+                      </script>
+                      #end if
                     </tbody>
                   </table>
                 </div>

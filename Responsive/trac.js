@@ -159,10 +159,12 @@ function trac(tracFile, tracDiv) {
             };
 
             outputHTML += '</tbody></table>';
+            $("#icon-storm").removeClass("hidden");
         }
         else {
             outputHTML = '<table class="table table-condensed table-responsive"><tbody>';
             outputHTML += '<tr><td class="text-primary">No thunderstorms detected</td></tr></tbody></table>';
+             $("#icon-storm").addClass("hidden");
         }
 
         $(tracDiv).html(outputHTML);
