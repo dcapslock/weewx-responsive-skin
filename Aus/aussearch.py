@@ -155,7 +155,7 @@ class ausutils(SearchList):
         
         try:
             xml_files = self.generator.skin_dict['AusSearch']['xml_files']
-        except:
+        except KeyError:
             xml_files = None
         
         if xml_files is not None:
@@ -167,7 +167,7 @@ class ausutils(SearchList):
 
         try:
             json_files = self.generator.skin_dict['AusSearch']['json_files']
-        except:
+        except KeyError:
             json_files = None
 
         if json_files is not None:
@@ -179,7 +179,7 @@ class ausutils(SearchList):
     
         try:
             localization = self.generator.skin_dict['AusSearch']['local']
-        except:
+        except KeyError:
             localization = None
 
         if localization is not None:
@@ -191,7 +191,7 @@ class ausutils(SearchList):
 
         try:
             index_locality = self.generator.skin_dict['AusSearch']['localities']['index_locality']
-        except:
+        except KeyError:
             index_locality = 'Sydney'
 
         self.aus['index_locality'] = index_locality
