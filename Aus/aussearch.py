@@ -240,7 +240,7 @@ class XmlFileHelper(object):
             xml_file_path_parts = xml_file.split('/')
             xml_file_parts = xml_file_path_parts[-1].split('.')
         except ValueError, e:
-            syslog.syslog(syslog.LOG_DEBUG, "aussearch: bad xml file format: %s: %s" % (xml_file, e.message))
+            syslog.syslog(syslog.LOG_ERR, "aussearch: bad xml file format: %s: %s" % (xml_file, e.message))
             return
 
         self.local_file = xml_file_path_parts[-1]
