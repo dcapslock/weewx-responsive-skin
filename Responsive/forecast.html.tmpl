@@ -64,11 +64,6 @@
                 #if $FC_DISTRICT is None
                 #set $FC_DISTRICT = $aus.FC_DISTRICT.forecast.getNode('area', type="public-district")
                 #end if
-                #if $aus.FC_LOCAL.amoc.phase.string == "NEW"
-				#set $fcIssueLocal = "Issued "
-				#else
-				#set $fcIssueLocal = "Updated "
-				#end if
                 #if $aus.FC_DISTRICT.amoc.phase.string == "NEW"
 				#set $fcIssueDistrict = "Issued "
 				#else
@@ -82,7 +77,7 @@
                 <div class="panel-body">
                   <h6>
                     <small>
-                      Forecast for $FC_LOCAL.description and $FC_DISTRICT.description area. $fcIssueLocal at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.FC_DISTRICT.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
+                      Forecast for $FC_LOCAL.description and $FC_DISTRICT.description area. $fcIssueDistrict at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.FC_DISTRICT.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
                     </small>
                   </h6>
                   #for $fcCount in range(8)
