@@ -185,7 +185,8 @@ class ausutils(SearchList):
         if localization is not None:
             for localization_object in localization:
                 try:
-                    self.aus[localization_object] = self.aus[self.generator.skin_dict['AusSearch']['local'][localization_object]]
+                    self.aus[localization_object] = \
+                        self.aus[self.generator.skin_dict['AusSearch']['local'][localization_object]]
                 except KeyError:
                     syslog.syslog(syslog.LOG_ERR, "aussearch: localization error for %s" % (localization_object))
 
@@ -232,10 +233,28 @@ class XmlFileHelper(object):
         formatter: an instance of Formatter
         converter: an instance of Converter
         """
+
         self.xml_file = xml_file
-        self.local_file = xml_file.split('/')[-1]
+
+        try:
+            xml_file_path_parts = xml_file.split('/')
+            xml_file_parts = xml_file_path_parts[-1].split('.')
+        except ValueError, e:
+            syslog.syslog(syslog.LOG_DEBUG, "aussearch: bad xml file format: %s: %s" % (xml_file, e.message))
+            return
+
+        self.local_file = xml_file_path_parts[-1]
         self.local_file_path = os.path.join(searcher.cache_root, self.local_file)
-        
+        self.is_ftp = True if xml_file_path_parts[0] == "ftp:" else False
+        # Build remote amoc file path from remote xml file path
+        # ftp://ftp.bom.gov.au/anon/gen/fwo/IDN11060.xml
+        # => ftp://ftp.bom.gov.au/anon/gen/fwo/IDN11060.amoc.xml
+        self.xml_file_amoc = '/'.join(
+            [
+                '/'.join(xml_file_path_parts[0:-1]),
+                '.'.join([xml_file_parts[0], "amoc", xml_file_parts[-1]])
+            ])
+
         if os.path.exists(self.local_file_path):
             try:
                 self.dom = ET.parse(open(self.local_file_path, "r"))
@@ -249,22 +268,48 @@ class XmlFileHelper(object):
 
                 nextIssue = self.root.find('amoc/next-routine-issue-time-utc')
                 if nextIssue is not None:
-                    check_datetime = dateutil.parser.parse(nextIssue.text) + datetime.timedelta(seconds=searcher.staleness_time)
+                    check_datetime = dateutil.parser.parse(nextIssue.text) + \
+                                     datetime.timedelta(seconds=searcher.staleness_time)
                     # For completeness we need to make sure that we are comparing timezone aware times
                     # since the parse of next-routine-issue-time-utc wil return a timezone aware time
                     # hence we pass a utc timezone to get the current utc time as a timezone aware time
                     # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
                     now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check xml file: %s expires %s" % (self.local_file_path, check_datetime))
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check xml file: %s expires %s" %
+                                  (self.local_file_path, check_datetime))
                     
                     if now_datetime >= check_datetime:
                         file_stale = True
                         syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file is stale: %s" % (self.local_file_path))
                 else:
-                    check_datetime = datetime.datetime.utcfromtimestamp(os.path.getmtime(self.local_file_path)) + datetime.timedelta(seconds=searcher.staleness_time)
+                    check_datetime = datetime.datetime.utcfromtimestamp(os.path.getmtime(self.local_file_path)) + \
+                                     datetime.timedelta(seconds=searcher.staleness_time)
                     now_datetime = datetime.datetime.utcnow()
                     if now_datetime >= check_datetime:
                         file_stale = True
+
+                # If not stale from cache information, check if amoc XML exists and check its sent time
+                # Generally only ftp files have amoc check files
+                if not file_stale and self.is_ftp:
+                    syslog.syslog(syslog.LOG_DEBUG,
+                                  "aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
+                                  (self.local_file))
+                    try:
+                        data = urlopen(self.xml_file_amoc).read()
+                        amoc_dom = ET.fromstring(data)
+                        sentTimeCache = self.root.find('amoc/sent-time').text
+                        sentTimeAmoc = amoc_dom.find('sent-time').text
+                        syslog.syslog(syslog.LOG_DEBUG,
+                                      "aussearch: xml: %s: sent-time: %s" % (self.local_file_path, sentTimeCache))
+                        syslog.syslog(syslog.LOG_DEBUG,
+                                      "aussearch: xml: %s: sent-time: %s" % (self.xml_file_amoc, sentTimeAmoc))
+                        if sentTimeAmoc != sentTimeCache:
+                            syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file is stale: %s" %
+                                          (self.local_file_path))
+                            file_stale = True
+                    except (AttributeError, IOError, ET.ParseError):
+                        # Amoc file may not exist or parse well. That is fine, we just won't use
+                        pass
             else:
                 file_stale = True
         else:
@@ -406,13 +451,16 @@ class JsonFileHelper(object):
                     latest_data_utc = None
 
                 if latest_data_utc is not None:
-                    check_datetime = dateutil.parser.parse(latest_data_utc + "UTC") + datetime.timedelta(seconds=searcher.refresh_time) + datetime.timedelta(seconds=searcher.staleness_time)
+                    check_datetime = dateutil.parser.parse(latest_data_utc + "UTC") + \
+                                     datetime.timedelta(seconds=searcher.refresh_time) + \
+                                     datetime.timedelta(seconds=searcher.staleness_time)
                     # For completeness we need to make sure that we are comparing timezone aware times
                     # since the parse of next-routine-issue-time-utc wil return a timezone aware time
                     # hence we pass a utc timezone to get the current utc time as a timezone aware time
                     # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
                     now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check json file: %s expires %s" % (self.local_file_path, check_datetime))
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check json file: %s expires %s" %
+                                  (self.local_file_path, check_datetime))
 
                     if now_datetime <= check_datetime:
                         file_stale = False
@@ -421,10 +469,12 @@ class JsonFileHelper(object):
                         syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file is stale: %s" % (self.local_file_path))
                 else:
                     file_stale = True
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file bad data assuming stale: %s" % (self.local_file_path))
+                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file bad data assuming stale: %s" %
+                                  (self.local_file_path))
         else:
             file_stale = True
-            syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file does not exist: %s" % (self.local_file_path))
+            syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file does not exist: %s" %
+                          (self.local_file_path))
         
         if file_stale:
             try:

@@ -18,8 +18,13 @@
                 <div class="panel-body">
 									<h6><small>
 									#set $issueDateTime = $aus.FC_LOCAL.amoc.issue__time__local.string
+									#if $aus.FC_LOCAL.amoc.phase.string == "NEW"
+									#set $fcIssueLocal = "Issued "
+									#else
+									#set $fcIssueLocal = "Updated "
+									#end if
 									Forecast for $aus.index_locality<br/>
-									Issued at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.FC_LOCAL.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
+									$fcIssueLocal at $dateutil.parser.parse($issueDateTime).strftime("%I:%M%p") $aus.FC_LOCAL.amoc.issue__time__local.tz on $dateutil.parser.parse($issueDateTime).strftime("%a %-d %b %Y")
 									</small></h6>
                   <table class="table table-condensed table-responsive">
                     <tbody>
