@@ -143,7 +143,7 @@
                         <td style="border-top: none;">$month.windchill.min at $month.windchill.mintime</td>
                       </tr>
                       #end if
-                      #if $month.appTemp.has_data
+                      #if $month.appTemp.has_data and $Extras.has_key('use_apptemp') and $Extras.use_apptemp == "1"
                       <tr>
                         <td style="border-bottom: none;">High App. Temp.</td>
                         <td style="border-bottom: none;">$month.appTemp.max ($aus.feelslike($month.appTemp.max.raw, $month.appTemp.maxtime.raw)) at $month.appTemp.maxtime</td>
@@ -311,7 +311,7 @@
                         <td style="border-top: none;">$year.windchill.min at $year.windchill.mintime</td>
                       </tr>
                       #end if
-                      #if $year.appTemp.has_data
+                      #if $year.appTemp.has_data and $Extras.has_key('use_apptemp') and $Extras.use_apptemp == "1"
                       <tr>
                         <td style="border-bottom: none;">High App. Temp.</td>
                         <td style="border-bottom: none;">$year.appTemp.max ($aus.feelslike($year.appTemp.max.raw, $year.appTemp.maxtime.raw)) at $year.appTemp.maxtime</td>

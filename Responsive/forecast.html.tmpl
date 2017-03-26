@@ -10,6 +10,7 @@
 ## Depending of your location and XML file in skin.conf
 ## you will need to adjust this file in a few places
 ##
+#if $Extras.has_key('use_forecast') and $Extras.use_forecast == '1'
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -408,3 +409,4 @@
     #end if
   </body>
 </html>
+#end if

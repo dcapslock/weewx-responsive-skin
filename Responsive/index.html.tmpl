@@ -165,7 +165,7 @@
                         <td>$current.heatindex</td>
                       </tr>
                       #end if
-                      #if $day.appTemp.has_data
+                      #if $day.appTemp.has_data and $Extras.has_key('use_apptemp') and $Extras.use_apptemp == "1"
                       <tr>
                         <td>
                           App. Temperature
@@ -268,7 +268,7 @@
                         <td style="border-top: none;">$day.windchill.min at $day.windchill.mintime</td>
                       </tr>
                       #end if
-                      #if $day.appTemp.has_data
+                      #if $day.appTemp.has_data and $Extras.has_key('use_apptemp') and $Extras.use_apptemp == "1"
                       <tr>
                         <td style="border-bottom: none;">High App. Temp.</td>
                         <td style="border-bottom: none;">$day.appTemp.max ($aus.feelslike($day.appTemp.max.raw, $day.appTemp.maxtime.raw)) at $day.appTemp.maxtime</td>
@@ -446,7 +446,9 @@
             ## Comment out below to not include Australian Forecast Panel
             ## See index-forecast.tmpl for more information
             ## Forecast Accordian is collapseAccTwoFive
+            #if $Extras.has_key('use_forecast') and $Extras.use_forecast == '1'
             #include "index-forecast.tmpl"
+            #end if
             #if $Extras.has_key('use_warn') and $Extras.use_warn == '1'
             <div class="panel panel-primary">
               <div class="panel-heading">
@@ -882,7 +884,7 @@
       "Headline" : "$Extras.location_long Weather",
       "datePublished" : "$current.dateTime.format("%Y-%m-%dT%H:%M:%S")$Extras.ISO8061_delta",
       "image" : "$station.station_url/daytempdew.png",
-      #if $day.appTemp.has_data
+      #if $day.appTemp.has_data and $Extras.has_key('use_apptemp') and $Extras.use_apptemp == "1"
       "articleSection" : "Current Conditions: Outside Temperature $current.outTemp App. Temperature $current.appTemp ($aus.feelslike($current.appTemp.raw, $current.dateTime.raw)) Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
       #else
       "articleSection" : "Current Conditions: Outside Temperature $current.outTemp Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
