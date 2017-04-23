@@ -295,7 +295,9 @@ class XmlFileHelper(object):
                                   "aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
                                   (self.local_file))
                     try:
-                        data = urlopen(self.xml_file_amoc).read()
+                        fp = urlopen(self.xml_file_amoc)
+                        data = fp.read()
+                        fp.close()
                         amoc_dom = ET.fromstring(data)
                         sentTimeCache = self.root.find('amoc/sent-time').text
                         sentTimeAmoc = amoc_dom.find('sent-time').text
@@ -317,7 +319,9 @@ class XmlFileHelper(object):
 
         if file_stale:
             try:
-                data = urlopen(self.xml_file).read()
+                fp = urlopen(self.xml_file)
+                data = fp.read()
+                fp.close()
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
                     syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file downloaded: %s" % (self.xml_file))
@@ -478,7 +482,9 @@ class JsonFileHelper(object):
         
         if file_stale:
             try:
-                data = urlopen(self.json_file).read()
+                fp = urlopen(self.json_file)
+                data = fp.read()
+                fp.close()
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
                     syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file downloaded: %s" % (self.json_file))
