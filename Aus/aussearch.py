@@ -9,7 +9,7 @@ import pprint
 import xml.etree.cElementTree as ET
 import json
 
-from urllib import urlopen
+from urllib import urlopen, urlcleanup
 
 import weewx.units
 import weeutil.weeutil
@@ -295,6 +295,8 @@ class XmlFileHelper(object):
                                   "aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
                                   (self.local_file))
                     try:
+                        # Call urlcleanup to work around Pythn 2.7 bug - See https://bugs.python.org/issue27973
+                        urlcleanup()
                         fp = urlopen(self.xml_file_amoc)
                         data = fp.read()
                         fp.close()
@@ -319,6 +321,7 @@ class XmlFileHelper(object):
 
         if file_stale:
             try:
+                urlcleanup()
                 fp = urlopen(self.xml_file)
                 data = fp.read()
                 fp.close()
@@ -482,6 +485,7 @@ class JsonFileHelper(object):
         
         if file_stale:
             try:
+                urlcleanup()
                 fp = urlopen(self.json_file)
                 data = fp.read()
                 fp.close()
