@@ -12,11 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Weather Webcam for Carlingford, NSW, Australia.">
     <meta name="author" content="">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <link href="weewx-responsive.css" rel="stylesheet">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/locale/en-au.js"></script> 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js "></script>    
@@ -118,7 +118,8 @@
                           <span data-src="1-hour.mp4" onclick="setVideoID(this);" class="video-src">Last Hour</span>
                         </td>
                         #set $nowHour = $datetime.now().hour
-                        #if $nowHour > 9
+                        #set $nowMin = $datetime.now().minute
+                        #if $nowHour > 9 or ($nowHour == 9 and $nowMin >= 5)
                         <td>
                           <span data-src="day.mp4" onclick="setVideoID(this);" class="video-src">From Sunrise</span>
                         </td>
@@ -209,15 +210,17 @@
 
                 function setArchiveDate(date) {
                   $("#archiveTitle").html(date.format("ddd, Do MMM YYYY") + ' - Daily');
-                  $.get("WEBCAM/daily.aspx?" + date.format("YYYY-MM-DD"), function (data) {
+                  $("#archiveDaily").html('');
+                  $("#archiveHourly").html('');
+                  $.get("WEBCAM/daily.php?date=" + date.format("YYYY-MM-DD"), function (data) {
                     $("#archiveDaily").html('<span data-src="daily/' + data.videos[0].fileName + '" onclick="setVideoID(this);" class="video-src">Sunrise to Sunset</span>');
                   });
-                  $.get("WEBCAM/hourly.aspx?" + date.format("YYYY-MM-DD"), function (data) {
+                  $.get("WEBCAM/hourly.php?date=" + date.format("YYYY-MM-DD"), function (data) {
                     var hourlyHTML =  '<tr><td colspan="3"><h5>' + date.format("ddd, Do MMM YYYY") + ' - Hourly</h5></td></tr>';
                     
                     hourlyHTML += '<tr>';
                     $.each(data.videos, function (index, value) {
-                      hourlyHTML += '<td><span data-src="hourly/' + value.fileName + '" onclick="setVideoID(this);" class="video-src">' + moment(value.lastWrite).subtract(1, 'hours').format("HH:01") + '-' + moment(value.lastWrite).format("HH:00") + '</span></td>';
+                      hourlyHTML += '<td><span data-src="hourly/' + value.fileName + '" onclick="setVideoID(this);" class="video-src">' + moment(value.lastWrite).format("HH:01") + '-' + moment(value.lastWrite).add(1, 'hours').format("HH:00") + '</span></td>';
                       if (index % 3 == 2) {
                         hourlyHTML += '</tr><tr>';
                       }
