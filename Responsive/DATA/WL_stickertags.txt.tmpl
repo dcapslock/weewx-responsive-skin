@@ -47,8 +47,13 @@
 #else
 #set $WL_HEATAPPTEMP = $current.heatindex.nolabel("%.1f","")
 #end if
+#if $Extras.has_key('use_almanac') and $Extras.use_almanac == '1'
 #set $WL_SUNRISE = $almanac.sun.rise.format("%H:%M:%S")
 #set $WL_SUNSET = $almanac.sun.set.format("%H:%M:%S")
+#else
+#set $WL_SUNRISE = ""
+#set $WL_SUNSET = ""
+#end if
 #set $WL_TEMPUNIT = $unit.label.outTemp.strip()
 #set $WL_WINDUNIT = $unit.label.windSpeed.strip().replace("/", "")
 #set $WL_BAROMUNIT = $unit.label.barometer.strip()
@@ -57,7 +62,7 @@
 ##<!--stationTime-->,<!--stationDate-->,<!--outsideTemp-->,<!--outsideHeatIndex-->,<!--windChill-->,<!--outsideHumidity-->,
 ##        1                  2                   3                    4                   5                   6            
 ##<!--outsideDewPt-->,<!--barometer-->,<!--BarTrend-->,<!--wind10Avg-->,<!--windDirection-->,<!--dailyRain-->,<!--blank-->,
-##         7                  8               9                10                11                  12       13
+##         7                  8               9                10                11                  12            13
 ##<!--sunriseTime-->,<!--sunsetTime-->,<!--windAvg10-->,<!--windHigh10-->,<!--tempUnit-->|<!--windUnit-->|<!--barUnit-->|<!--rainUnit-->
 ##        14                15                16               17               18               19             20             21
 ##1      2        3           4                5                6          7        8         9                   10       11          12        13      14          15         16       17           18-21
