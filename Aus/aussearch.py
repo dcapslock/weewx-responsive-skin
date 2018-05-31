@@ -9,7 +9,7 @@ import pprint
 import xml.etree.cElementTree as ET
 import json
 
-from urllib import urlopen, urlcleanup
+from urllib2 import urlopen, Request
 
 import weewx.units
 import weeutil.weeutil
@@ -140,6 +140,11 @@ class ausutils(SearchList):
         except KeyError:
             self.cache_root = '/var/lib/weewx/aussearch'
         
+        try:
+            self.user_agent = self.generator.skin_dict['AusSearch']['user_agent']
+        except KeyError:
+            self.user_agent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+
         try:
             self.staleness_time = float(self.generator.skin_dict['AusSearch']['staleness_time'])
         except KeyError:
@@ -295,9 +300,8 @@ class XmlFileHelper(object):
                                   "aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
                                   (self.local_file))
                     try:
-                        # Call urlcleanup to work around Pythn 2.7 bug - See https://bugs.python.org/issue27973
-                        urlcleanup()
-                        fp = urlopen(self.xml_file_amoc)
+                        request = Request(self.xml_file_amoc, headers={'User-Agent':searcher.user_agent})
+                        fp = urlopen(request)
                         data = fp.read()
                         fp.close()
                         amoc_dom = ET.fromstring(data)
@@ -321,8 +325,8 @@ class XmlFileHelper(object):
 
         if file_stale:
             try:
-                urlcleanup()
-                fp = urlopen(self.xml_file)
+                request = Request(self.xml_file, headers={'User-Agent':searcher.user_agent})
+                fp = urlopen(request)
                 data = fp.read()
                 fp.close()
                 with open(self.local_file_path, 'w') as f:
@@ -485,8 +489,8 @@ class JsonFileHelper(object):
         
         if file_stale:
             try:
-                urlcleanup()
-                fp = urlopen(self.json_file)
+                request = Request(self.json_file, headers={'User-Agent':searcher.user_agent})
+                fp = urlopen(request)
                 data = fp.read()
                 fp.close()
                 with open(self.local_file_path, 'w') as f:
