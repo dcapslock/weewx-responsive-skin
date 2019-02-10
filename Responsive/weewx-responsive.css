@@ -5,6 +5,11 @@
   
 /* Global */
 
+/* Match body font color to the Seasons skin graphs */
+body {
+	color: #787878;
+}
+
 .voffset1 { margin-top: 5px; margin-bottom: 5px; }
 
 #graphs > .col-md-6 {padding-left: 2px; padding-right: 2px;}
