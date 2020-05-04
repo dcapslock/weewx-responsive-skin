@@ -8,8 +8,7 @@ import os.path
 import pprint
 import xml.etree.cElementTree as ET
 import json
-
-from urllib2 import urlopen, Request
+from urllib.request import urlopen, Request
 
 import weewx.units
 import weeutil.weeutil
@@ -244,7 +243,7 @@ class XmlFileHelper(object):
         try:
             xml_file_path_parts = xml_file.split('/')
             xml_file_parts = xml_file_path_parts[-1].split('.')
-        except ValueError, e:
+        except ValueError as e:
             syslog.syslog(syslog.LOG_ERR, "aussearch: bad xml file format: %s: %s" % (xml_file, e.message))
             return
 
@@ -264,7 +263,7 @@ class XmlFileHelper(object):
             try:
                 self.dom = ET.parse(open(self.local_file_path, "r"))
                 self.root = self.dom.getroot()
-            except ET.ParseError, e:
+            except ET.ParseError as e:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: bad cache xml file %s: %s" % (self.local_file_path, e))
                 self.root = None
 
@@ -302,7 +301,7 @@ class XmlFileHelper(object):
                     try:
                         request = Request(self.xml_file_amoc, headers={'User-Agent':searcher.user_agent})
                         fp = urlopen(request)
-                        data = fp.read()
+                        data = fp.read().decode()
                         fp.close()
                         amoc_dom = ET.fromstring(data)
                         sentTimeCache = self.root.find('amoc/sent-time').text
@@ -327,14 +326,14 @@ class XmlFileHelper(object):
             try:
                 request = Request(self.xml_file, headers={'User-Agent':searcher.user_agent})
                 fp = urlopen(request)
-                data = fp.read()
+                data = fp.read().decode()
                 fp.close()
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
                     syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file downloaded: %s" % (self.xml_file))
                 self.dom = ET.parse(open(self.local_file_path, "r"))
                 self.root = self.dom.getroot()
-            except IOError, e:
+            except IOError as e:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: cannot download xml file %s: %s" % (self.xml_file, e))
                 self.root = None
         
@@ -399,7 +398,7 @@ class XMLNode(object):
                 node_search += '/'
                 node_search += xArg
                 
-            for key, value in kwargs.iteritems():
+            for key, value in kwargs.items():
                 node_search += str.format("[@{0}='{1}']", key, value)
         
         childNode = self.node.find(node_search)
@@ -451,7 +450,7 @@ class JsonFileHelper(object):
         if os.path.exists(self.local_file_path):
             try:
                 self.root = json.load(open(self.local_file_path, "r"))
-            except IOError, e:
+            except IOError as e:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: cannot load local json file %s: %s" % (self.local_file_path, e))
                 self.root = None
 
@@ -491,13 +490,13 @@ class JsonFileHelper(object):
             try:
                 request = Request(self.json_file, headers={'User-Agent':searcher.user_agent})
                 fp = urlopen(request)
-                data = fp.read()
+                data = fp.read().decode()
                 fp.close()
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
                     syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file downloaded: %s" % (self.json_file))
                 self.root = json.load(open(self.local_file_path, "r"))
-            except IOError, e:
+            except IOError as e:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: cannot download json file %s: %s" % (self.json_file, e))
 
         if self.root is not None:
