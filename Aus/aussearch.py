@@ -8,7 +8,11 @@ import os.path
 import pprint
 import xml.etree.cElementTree as ET
 import json
-from urllib.request import urlopen, Request
+
+try:
+    from urllib.request import Request, urlopen #python3+
+except ImportError:
+    from urllib2 import Request, urlopen        #python2
 
 import weewx.units
 import weeutil.weeutil
@@ -48,6 +52,65 @@ feelslikeDict = {
 
 feelslikeLocalDefaults = ['DaySummerCoastRanges', 'NightSummerSouthRanges', 'DayWinterSouthRanges', 'NightWinterSouthRanges']
 
+iconsDefault = { 
+                        '1' : 'http://www.bom.gov.au/images/symbols/large/sunny.png', 
+                        '2' : 'http://www.bom.gov.au/images/symbols/large/clear.png', 
+                        '3' : 'http://www.bom.gov.au/images/symbols/large/partly-cloudy.png',
+                        '4' : 'http://www.bom.gov.au/images/symbols/large/cloudy.png',
+                        '5' : '',
+                        '6' : 'http://www.bom.gov.au/images/symbols/large/haze.png',
+                        '7' : '',
+                        '8' : 'http://www.bom.gov.au/images/symbols/large/light-rain.png',
+                        '9' : 'http://www.bom.gov.au/images/symbols/large/wind.png',
+                        '10' : 'http://www.bom.gov.au/images/symbols/large/fog.png',
+                        '11' : 'http://www.bom.gov.au/images/symbols/large/showers.png',
+                        '12' : 'http://www.bom.gov.au/images/symbols/large/rain.png',
+                        '13' : 'http://www.bom.gov.au/images/symbols/large/dust.png',
+                        '14' : 'http://www.bom.gov.au/images/symbols/large/frost.png',
+                        '15' : 'http://www.bom.gov.au/images/symbols/large/snow.png',
+                        '16' : 'http://www.bom.gov.au/images/symbols/large/storm.png',
+                        '17' : 'http://www.bom.gov.au/images/symbols/large/light-showers.png',
+                        '18' : 'http://www.bom.gov.au/images/symbols/large/heavy-showers.png' 
+                    }
+                    
+iconsSmlDefault = { 
+                        '1' : 'http://www.bom.gov.au/images/symbols/small/sunny.png', 
+                        '2' : 'http://www.bom.gov.au/images/symbols/small/clear.png', 
+                        '3' : 'http://www.bom.gov.au/images/symbols/small/partly-cloudy.png',
+                        '4' : 'http://www.bom.gov.au/images/symbols/small/cloudy.png',
+                        '5' : '',
+                        '6' : 'http://www.bom.gov.au/images/symbols/small/haze.png',
+                        '7' : '',
+                        '8' : 'http://www.bom.gov.au/images/symbols/small/light-rain.png',
+                        '9' : 'http://www.bom.gov.au/images/symbols/small/wind.png',
+                        '10' : 'http://www.bom.gov.au/images/symbols/small/fog.png',
+                        '11' : 'http://www.bom.gov.au/images/symbols/small/showers.png',
+                        '12' : 'http://www.bom.gov.au/images/symbols/small/rain.png',
+                        '13' : 'http://www.bom.gov.au/images/symbols/small/dust.png',
+                        '14' : 'http://www.bom.gov.au/images/symbols/small/frost.png',
+                        '15' : 'http://www.bom.gov.au/images/symbols/small/snow.png',
+                        '16' : 'http://www.bom.gov.au/images/symbols/small/storm.png',
+                        '17' : 'http://www.bom.gov.au/images/symbols/small/light-showers.png',
+                        '18' : 'http://www.bom.gov.au/images/symbols/small/heavy-showers.png'  
+                    }                            
+                    
+rainImgsDefault = { 
+                        '0%' : 'http://www.bom.gov.au/images/ui/weather/rain_0.gif',
+                        '5%' : 'http://www.bom.gov.au/images/ui/weather/rain_5.gif',
+                        '10%' : 'http://www.bom.gov.au/images/ui/weather/rain_10.gif',
+                        '20%' : 'http://www.bom.gov.au/images/ui/weather/rain_20.gif',
+                        '30%' : 'http://www.bom.gov.au/images/ui/weather/rain_30.gif',
+                        '40%' : 'http://www.bom.gov.au/images/ui/weather/rain_40.gif',
+                        '50%' : 'http://www.bom.gov.au/images/ui/weather/rain_50.gif',
+                        '60%' : 'http://www.bom.gov.au/images/ui/weather/rain_60.gif',
+                        '70%' : 'http://www.bom.gov.au/images/ui/weather/rain_70.gif',
+                        '80%' : 'http://www.bom.gov.au/images/ui/weather/rain_80.gif',
+                        '90%' : 'http://www.bom.gov.au/images/ui/weather/rain_90.gif',
+                        '95%' : 'http://www.bom.gov.au/images/ui/weather/rain_95.gif',
+                        '100%' : 'http://www.bom.gov.au/images/ui/weather/rain_100.gif'
+                    }     
+
+
 class ausutils(SearchList):
     """Class that implements the '$aus' tag."""
 
@@ -75,65 +138,33 @@ class ausutils(SearchList):
         except KeyError:
             syslog.syslog(syslog.LOG_ERR, "aussearch: invalid feelslikeLocal settings [%s, %s, %s, %s]" 
                           % feelslikeLocalList[0], feelslikeLocalList[1], feelslikeLocalList[2], feelslikeLocalList[3])
-          
-        self.aus['icons'] = { 
-                              '1' : 'http://www.bom.gov.au/images/symbols/large/sunny.png', 
-                              '2' : 'http://www.bom.gov.au/images/symbols/large/clear.png', 
-                              '3' : 'http://www.bom.gov.au/images/symbols/large/partly-cloudy.png',
-                              '4' : 'http://www.bom.gov.au/images/symbols/large/cloudy.png',
-                              '5' : '',
-                              '6' : 'http://www.bom.gov.au/images/symbols/large/haze.png',
-                              '7' : '',
-                              '8' : 'http://www.bom.gov.au/images/symbols/large/light-rain.png',
-                              '9' : 'http://www.bom.gov.au/images/symbols/large/wind.png',
-                              '10' : 'http://www.bom.gov.au/images/symbols/large/fog.png',
-                              '11' : 'http://www.bom.gov.au/images/symbols/large/showers.png',
-                              '12' : 'http://www.bom.gov.au/images/symbols/large/rain.png',
-                              '13' : 'http://www.bom.gov.au/images/symbols/large/dust.png',
-                              '14' : 'http://www.bom.gov.au/images/symbols/large/frost.png',
-                              '15' : 'http://www.bom.gov.au/images/symbols/large/snow.png',
-                              '16' : 'http://www.bom.gov.au/images/symbols/large/storm.png',
-                              '17' : 'http://www.bom.gov.au/images/symbols/large/light-showers.png',
-                              '18' : 'http://www.bom.gov.au/images/symbols/large/heavy-showers.png' 
-                            }
-                            
-        self.aus['iconsSml'] = { 
-                              '1' : 'http://www.bom.gov.au/images/symbols/small/sunny.png', 
-                              '2' : 'http://www.bom.gov.au/images/symbols/small/clear.png', 
-                              '3' : 'http://www.bom.gov.au/images/symbols/small/partly-cloudy.png',
-                              '4' : 'http://www.bom.gov.au/images/symbols/small/cloudy.png',
-                              '5' : '',
-                              '6' : 'http://www.bom.gov.au/images/symbols/small/haze.png',
-                              '7' : '',
-                              '8' : 'http://www.bom.gov.au/images/symbols/small/light-rain.png',
-                              '9' : 'http://www.bom.gov.au/images/symbols/small/wind.png',
-                              '10' : 'http://www.bom.gov.au/images/symbols/small/fog.png',
-                              '11' : 'http://www.bom.gov.au/images/symbols/small/showers.png',
-                              '12' : 'http://www.bom.gov.au/images/symbols/small/rain.png',
-                              '13' : 'http://www.bom.gov.au/images/symbols/small/dust.png',
-                              '14' : 'http://www.bom.gov.au/images/symbols/small/frost.png',
-                              '15' : 'http://www.bom.gov.au/images/symbols/small/snow.png',
-                              '16' : 'http://www.bom.gov.au/images/symbols/small/storm.png',
-                              '17' : 'http://www.bom.gov.au/images/symbols/small/light-showers.png',
-                              '18' : 'http://www.bom.gov.au/images/symbols/small/heavy-showers.png'  
-                            }                            
-                            
-        self.aus['rainImgs'] = { 
-                              '0%' : 'http://www.bom.gov.au/images/ui/weather/rain_0.gif',
-                              '5%' : 'http://www.bom.gov.au/images/ui/weather/rain_5.gif',
-                              '10%' : 'http://www.bom.gov.au/images/ui/weather/rain_10.gif',
-                              '20%' : 'http://www.bom.gov.au/images/ui/weather/rain_20.gif',
-                              '30%' : 'http://www.bom.gov.au/images/ui/weather/rain_30.gif',
-                              '40%' : 'http://www.bom.gov.au/images/ui/weather/rain_40.gif',
-                              '50%' : 'http://www.bom.gov.au/images/ui/weather/rain_50.gif',
-                              '60%' : 'http://www.bom.gov.au/images/ui/weather/rain_60.gif',
-                              '70%' : 'http://www.bom.gov.au/images/ui/weather/rain_70.gif',
-                              '80%' : 'http://www.bom.gov.au/images/ui/weather/rain_80.gif',
-                              '90%' : 'http://www.bom.gov.au/images/ui/weather/rain_90.gif',
-                              '95%' : 'http://www.bom.gov.au/images/ui/weather/rain_95.gif',
-                              '100%' : 'http://www.bom.gov.au/images/ui/weather/rain_100.gif'
-                            }     
-        
+
+        try:
+            self.iconsFolder = self.generator.skin_dict['AusSearch']['icons_folder']
+        except KeyError:
+            self.iconsFolder = '' 
+
+        self.aus['icons'] = {}
+        for iconX in range(1, 19):
+            try:
+                self.aus['icons'][str(iconX)] = self.iconsFolder + '/' + self.generator.skin_dict['AusSearch']['icons'][str(iconX)]
+            except KeyError:
+                self.aus['icons'][str(iconX)] = iconsDefault[str(iconX)]
+
+        self.aus['iconsSml'] = {}
+        for iconX in range(1, 19):
+            try:
+                self.aus['iconsSml'][str(iconX)] = self.iconsFolder + '/' + self.generator.skin_dict['AusSearch']['iconsSml'][str(iconX)]
+            except KeyError:
+                self.aus['iconsSml'][str(iconX)] = iconsSmlDefault[str(iconX)]
+
+        self.aus['rainImgs'] = {}
+        for rainImgsX in [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]:
+            try:
+                self.aus['rainImgs'][str(rainImgsX)+'%'] = self.iconsFolder + '/' + self.generator.skin_dict['AusSearch']['rainImgs'][str(rainImgsX)]
+            except KeyError:
+                self.aus['rainImgs'][str(rainImgsX)+'%'] = rainImgsDefault[str(rainImgsX)+'%']
+
         try:
             self.cache_root = self.generator.skin_dict['AusSearch']['cache_root']
         except KeyError:
