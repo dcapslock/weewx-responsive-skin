@@ -8,4 +8,5 @@
 *.user
 *.sln
 *.config
+*.code-workspace
 .vs/
