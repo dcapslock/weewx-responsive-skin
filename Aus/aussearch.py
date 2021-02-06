@@ -297,6 +297,7 @@ class XmlFileHelper(object):
             except ET.ParseError as e:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: bad cache xml file %s: %s" % (self.local_file_path, e))
                 self.root = None
+                file_stale = True
 
             if self.root is not None:
                 file_stale = False 
@@ -481,9 +482,10 @@ class JsonFileHelper(object):
         if os.path.exists(self.local_file_path):
             try:
                 self.root = json.load(open(self.local_file_path, "r"))
-            except IOError as e:
+            except (IOError, ValueError) as e:
                 syslog.syslog(syslog.LOG_ERR, "aussearch: cannot load local json file %s: %s" % (self.local_file_path, e))
                 self.root = None
+                file_stale = True
 
             if self.root is not None:
                 try:
