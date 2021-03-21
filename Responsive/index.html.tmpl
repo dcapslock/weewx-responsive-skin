@@ -130,6 +130,11 @@
                     <img src="dayextra.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="$Extras.extraTempsPlotAltText" />
                   </div>
                   #end if
+                  #if $day.extraHumid1.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="dayextra1.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="$Extras.extraHumidsPlotAltText" />
+                  </div>
+                  #end if
                 </div>
               </div>
             </div>
@@ -213,6 +218,18 @@
                       <tr>
                           <td>$Extras.extraTemp2Label</td>
                           <td>$current.extraTemp2</td>
+                      </tr>
+                      #end if
+                      #if $day.extraHumid1.has_data
+                      <tr>
+                        <td>$Extras.extraHumid1Label</td>
+                        <td>$current.extraHumid1</td>
+                      </tr>
+                      #end if
+                      #if $day.extraHumid2.has_data
+                      <tr>
+                          <td>$Extras.extraHumid2Label</td>
+                          <td>$current.extraHumid2</td>
                       </tr>
                       #end if
                       #if $day.UV.has_data
@@ -360,7 +377,7 @@
                         <td style="border-top: none;">$day.extraTemp1.min at $day.extraTemp1.mintime</td>
                       </tr>
                       #end if
-                        #if $day.extraTemp2.has_data
+                      #if $day.extraTemp2.has_data
                         <tr>
                             <td style="border-bottom: none;">High $Extras.extraTemp2Label</td>
                             <td style="border-bottom: none;">$day.extraTemp2.max at $day.extraTemp2.maxtime</td>
@@ -368,6 +385,26 @@
                         <tr>
                             <td style="border-top: none;">Low $Extras.extraTemp2Label</td>
                             <td style="border-top: none;">$day.extraTemp2.min at $day.extraTemp2.mintime</td>
+                        </tr>
+                      #end if
+                      #if $day.extraHumid1.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High $Extras.extraHumid1Label</td>
+                        <td style="border-bottom: none;">$day.extraHumid1.max at $day.extraHumid1.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low $Extras.extraHumid1Label</td>
+                        <td style="border-top: none;">$day.extraHumid1.min at $day.extraHumid1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $day.extraHumid2.has_data
+                        <tr>
+                            <td style="border-bottom: none;">High $Extras.extraHumid2Label</td>
+                            <td style="border-bottom: none;">$day.extraHumid2.max at $day.extraHumid2.maxtime</td>
+                        </tr>
+                        <tr>
+                            <td style="border-top: none;">Low $Extras.extraHumid2Label</td>
+                            <td style="border-top: none;">$day.extraHumid2.min at $day.extraHumid2.mintime</td>
                         </tr>
                       #end if
                       #if $day.UV.has_data

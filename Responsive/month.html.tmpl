@@ -106,6 +106,11 @@
                     <img src="monthextra.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="$Extras.extraTempsPlotAltText" />
                   </div>
                   #end if
+                  #if $month.extraHumid1.has_data
+                  <div class="col-xs-12 col-sm-6 col-md-6">
+                    <img src="monthextra1.png" class="center-block img-responsive" style="padding-bottom: 5px;" alt="$Extras.extraHumidsPlotAltText" />
+                  </div>
+                  #end if
                 </div>
               </div>
             </div>
@@ -243,6 +248,26 @@
                       <tr>
                           <td style="border-top: none;">Low $Extras.extraTemp2Label</td>
                           <td style="border-top: none;">$month.extraTemp2.min at $month.extraTemp2.mintime</td>
+                      </tr>
+                      #end if
+                      #if $month.extraHumid1.has_data
+                      <tr>
+                        <td style="border-bottom: none;">High $Extras.extraHumid1Label</td>
+                        <td style="border-bottom: none;">$month.extraHumid1.max at $month.extraHumid1.maxtime</td>
+                      </tr>
+                      <tr>
+                        <td style="border-top: none;">Low $Extras.extraHumid1Label</td>
+                        <td style="border-top: none;">$month.extraHumid1.min at $month.extraHumid1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $month.extraHumid2.has_data
+                      <tr>
+                          <td style="border-bottom: none;">High $Extras.extraHumid2Label</td>
+                          <td style="border-bottom: none;">$month.extraHumid2.max at $month.extraHumid2.maxtime</td>
+                      </tr>
+                      <tr>
+                          <td style="border-top: none;">Low $Extras.extraHumid2Label</td>
+                          <td style="border-top: none;">$month.extraHumid2.min at $month.extraHumid2.mintime</td>
                       </tr>
                       #end if
                       #if $month.UV.has_data
@@ -403,14 +428,24 @@
                         <td style="border-top: none;">$year.extraTemp1.min at $year.extraTemp1.mintime</td>
                       </tr>
                       #end if
-                      #if $year.extraTemp2.has_data
+                      #if $year.extraHumid1.has_data
                       <tr>
-                          <td style="border-bottom: none;">High $Extras.extraTemp2Label</td>
-                          <td style="border-bottom: none;">$year.extraTemp2.max at $year.extraTemp2.maxtime</td>
+                        <td style="border-bottom: none;">High $Extras.extraHumid1Label</td>
+                        <td style="border-bottom: none;">$year.extraHumid1.max at $year.extraHumid1.maxtime</td>
                       </tr>
                       <tr>
-                          <td style="border-top: none;">Low $Extras.extraTemp2Label</td>
-                          <td style="border-top: none;">$year.extraTemp2.min at $year.extraTemp2.mintime</td>
+                        <td style="border-top: none;">Low $Extras.extraHumid1Label</td>
+                        <td style="border-top: none;">$year.extraHumid1.min at $year.extraHumid1.mintime</td>
+                      </tr>
+                      #end if
+                      #if $year.extraHumid2.has_data
+                      <tr>
+                          <td style="border-bottom: none;">High $Extras.extraHumid2Label</td>
+                          <td style="border-bottom: none;">$year.extraHumid2.max at $year.extraHumid2.maxtime</td>
+                      </tr>
+                      <tr>
+                          <td style="border-top: none;">Low $Extras.extraHumid2Label</td>
+                          <td style="border-top: none;">$year.extraHumid2.min at $year.extraHumid2.mintime</td>
                       </tr>
                       #end if
                       #if $year.UV.has_data
