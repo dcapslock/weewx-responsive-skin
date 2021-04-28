@@ -173,7 +173,7 @@ class ausutils(SearchList):
         try:
             self.user_agent = self.generator.skin_dict['AusSearch']['user_agent']
         except KeyError:
-            self.user_agent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
+            self.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36'
 
         try:
             self.staleness_time = float(self.generator.skin_dict['AusSearch']['staleness_time'])
