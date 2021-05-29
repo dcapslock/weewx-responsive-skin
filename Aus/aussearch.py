@@ -631,5 +631,5 @@ class FileFetch(object):
             connection = httplib.HTTPConnection(parsedUrl.netloc)
             connection.request('GET', parsedUrl.path, headers=headers)
             response = connection.getresponse()
-            data = response.read()
+            data = response.read().decode()
             return data
