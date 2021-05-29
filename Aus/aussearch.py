@@ -10,6 +10,11 @@ import xml.etree.cElementTree as ET
 import json
 
 try:
+    import http.client as httplib #python3+
+except:
+    import httplib      #python2
+
+try:
     from urllib.request import Request, urlopen #python3+
 except ImportError:
     from urllib2 import Request, urlopen        #python2
@@ -34,6 +39,13 @@ DayWinterTropics = { -40: 'Cold', 20: 'Cool', 26: '-' }
 NightWinterSouthRanges = { -40: 'Very Cold', 1: 'Cold', 5: 'Cool', 10: 'Mild' }
 NightWinterNorth = { -40: 'Very Cold', 5: 'Cold', 10: 'Cool', 15: 'Mild' }
 NightWinterTropics = { -40: 'Cold', 13: 'Cool', 18: '-' }
+
+requestHeadersDefault = {
+                        'Connection': 'keep-alive',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                        'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8'
+}
 
 feelslikeDict = {
                 'DaySummerCoastRanges': DaySummerCoastRanges,
@@ -171,9 +183,11 @@ class ausutils(SearchList):
             self.cache_root = '/var/lib/weewx/aussearch'
         
         try:
-            self.user_agent = self.generator.skin_dict['AusSearch']['user_agent']
+            self.request_headers = self.generator.skin_dict['AusSearch']['request_headers']
         except KeyError:
-            self.user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36'
+            self.request_headers = requestHeadersDefault
+
+        syslog.syslog(syslog.LOG_ERR, "aussearch: self.request_headers %s" % self.request_headers)
 
         try:
             self.staleness_time = float(self.generator.skin_dict['AusSearch']['staleness_time'])
@@ -331,10 +345,7 @@ class XmlFileHelper(object):
                                   "aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
                                   (self.local_file))
                     try:
-                        request = Request(self.xml_file_amoc, headers={'User-Agent':searcher.user_agent})
-                        fp = urlopen(request)
-                        data = fp.read().decode()
-                        fp.close()
+                        data = FileFetch.fetch(self.xml_file_amoc, searcher.request_headers, True)
                         amoc_dom = ET.fromstring(data)
                         sentTimeCache = self.root.find('amoc/sent-time').text
                         sentTimeAmoc = amoc_dom.find('sent-time').text
@@ -356,10 +367,7 @@ class XmlFileHelper(object):
 
         if file_stale:
             try:
-                request = Request(self.xml_file, headers={'User-Agent':searcher.user_agent})
-                fp = urlopen(request)
-                data = fp.read().decode()
-                fp.close()
+                data = FileFetch.fetch(self.xml_file, searcher.request_headers, self.is_ftp)
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
                     syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file downloaded: %s" % (self.xml_file))
@@ -521,10 +529,7 @@ class JsonFileHelper(object):
         
         if file_stale:
             try:
-                request = Request(self.json_file, headers={'User-Agent':searcher.user_agent})
-                fp = urlopen(request)
-                data = fp.read().decode()
-                fp.close()
+                data = FileFetch.fetch(self.json_file, searcher.request_headers)
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
                     syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file downloaded: %s" % (self.json_file))
@@ -603,3 +608,23 @@ class JSONNode(object):
         key_or_index = key_or_index.replace("__", "-")
          
         return self.walk(key_or_index)
+
+class FileFetch(object):
+    @staticmethod
+    def fetch(url, headers, is_ftp=False):
+        # Use urllib2 for FTP
+        # Use http.client/httplib for all else as BOM needs to see header 'Connection: keep-alive' 
+        # to believe we are a browser
+        if (is_ftp):
+            request = Request(url, headers)
+            fp = urlopen(request)
+            data = fp.read().decode()
+            fp.close()
+            return data
+        else:
+            #FIXME: Get domain from URL
+            connection = httplib.HTTPConnection('www.bom.gov.au')
+            connection.request('GET', url, headers=headers)
+            response = connection.getresponse()
+            data = response.read()
+            return data
