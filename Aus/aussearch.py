@@ -19,6 +19,11 @@ try:
 except ImportError:
     from urllib2 import Request, urlopen        #python2
 
+try:
+    from urllib.parse import urlparse   #python3+
+except ImportError:
+    from urlparse import urlparse
+
 import weewx.units
 import weeutil.weeutil
 from weewx.cheetahgenerator import SearchList
@@ -622,9 +627,9 @@ class FileFetch(object):
             fp.close()
             return data
         else:
-            #FIXME: Get domain from URL
-            connection = httplib.HTTPConnection('www.bom.gov.au')
-            connection.request('GET', url, headers=headers)
+            parsedUrl = urlparse(url)
+            connection = httplib.HTTPConnection(parsedUrl.netloc)
+            connection.request('GET', parsedUrl.path, headers=headers)
             response = connection.getresponse()
             data = response.read()
             return data
