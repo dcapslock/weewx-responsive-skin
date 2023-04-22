@@ -64,6 +64,7 @@
                 #set $FC_DISTRICT = $aus.FC_DISTRICT.forecast.getNode('area', type="metropolitan")
                 #if $FC_DISTRICT is None
                 #set $FC_DISTRICT = $aus.FC_DISTRICT.forecast.getNode('area', type="public-district")
+                #end if
                 #if $FC_DISTRICT is None
                 #set $FC_DISTRICT = $aus.FC_DISTRICT.forecast.getNode('area', type="location")
                 #end if
