@@ -6,7 +6,7 @@ import dateutil.tz
 import syslog
 import os.path
 import pprint
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 import json
 
 try:
