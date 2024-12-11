@@ -192,7 +192,7 @@ class ausutils(SearchList):
         except KeyError:
             self.request_headers = requestHeadersDefault
 
-        syslog.syslog(syslog.LOG_ERR, "aussearch: self.request_headers %s" % self.request_headers)
+        syslog.syslog(syslog.LOG_DEBUG, "aussearch: self.request_headers %s" % self.request_headers)
 
         try:
             self.staleness_time = float(self.generator.skin_dict['AusSearch']['staleness_time'])
