@@ -1,13 +1,11 @@
-﻿import datetime
-import pytz
-import time
+import datetime
 import dateutil.parser
 import dateutil.tz
-import syslog
 import os.path
 import pprint
-import xml.etree.ElementTree as ET
+import xml.etree.cElementTree as ET
 import json
+import logging
 
 try:
     import http.client as httplib #python3+
@@ -27,6 +25,8 @@ except ImportError:
 import weewx.units
 import weeutil.weeutil
 from weewx.cheetahgenerator import SearchList
+
+log = logging.getLogger(__name__)
 
 #feeslike lookups
 DaySummerCoastRanges = { -40: 'Cold', 16: 'Cool', 22: 'Mild', 27: 'Warm', 32: 'Hot', 37: 'Very Hot' }
@@ -148,12 +148,12 @@ class ausutils(SearchList):
             self.feelslikeLocal['DayWinter']      = feelslikeDict[feelslikeLocalList[2]]
             self.feelslikeLocal['NightWinter']    = feelslikeDict[feelslikeLocalList[3]]
 
-            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['DaySummer'] = %s" % (pprint.pformat(self.feelslikeLocal['DaySummer'])))
-            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['NightSummer'] = %s" % (pprint.pformat(self.feelslikeLocal['NightSummer'])))
-            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['DayWinter'] = %s" % (pprint.pformat(self.feelslikeLocal['DayWinter'])))
-            syslog.syslog(syslog.LOG_DEBUG, "aussearch: feelslikeLocal['NightWinter'] = %s" % (pprint.pformat(self.feelslikeLocal['NightWinter'])))
+            log.debug("aussearch: feelslikeLocal['DaySummer'] = %s" % (pprint.pformat(self.feelslikeLocal['DaySummer'])))
+            log.debug("aussearch: feelslikeLocal['NightSummer'] = %s" % (pprint.pformat(self.feelslikeLocal['NightSummer'])))
+            log.debug("aussearch: feelslikeLocal['DayWinter'] = %s" % (pprint.pformat(self.feelslikeLocal['DayWinter'])))
+            log.debug("aussearch: feelslikeLocal['NightWinter'] = %s" % (pprint.pformat(self.feelslikeLocal['NightWinter'])))
         except KeyError:
-            syslog.syslog(syslog.LOG_ERR, "aussearch: invalid feelslikeLocal settings [%s, %s, %s, %s]" 
+            log.error("aussearch: invalid feelslikeLocal settings [%s, %s, %s, %s]" 
                           % feelslikeLocalList[0], feelslikeLocalList[1], feelslikeLocalList[2], feelslikeLocalList[3])
 
         try:
@@ -192,7 +192,7 @@ class ausutils(SearchList):
         except KeyError:
             self.request_headers = requestHeadersDefault
 
-        syslog.syslog(syslog.LOG_DEBUG, "aussearch: self.request_headers %s" % self.request_headers)
+        log.debug("aussearch: self.request_headers %s" % self.request_headers)
 
         try:
             self.staleness_time = float(self.generator.skin_dict['AusSearch']['staleness_time'])
@@ -242,7 +242,7 @@ class ausutils(SearchList):
                     self.aus[localization_object] = \
                         self.aus[self.generator.skin_dict['AusSearch']['local'][localization_object]]
                 except KeyError:
-                    syslog.syslog(syslog.LOG_ERR, "aussearch: localization error for %s" % (localization_object))
+                    log.error("aussearch: localization error for %s" % (localization_object))
 
         try:
             index_locality = self.generator.skin_dict['AusSearch']['localities']['index_locality']
@@ -294,7 +294,7 @@ class XmlFileHelper(object):
             xml_file_path_parts = xml_file.split('/')
             xml_file_parts = xml_file_path_parts[-1].split('.')
         except ValueError as e:
-            syslog.syslog(syslog.LOG_ERR, "aussearch: bad xml file format: %s: %s" % (xml_file, e.message))
+            log.error("aussearch: bad xml file format: %s: %s" % (xml_file, e.message))
             return
 
         self.local_file = xml_file_path_parts[-1]
@@ -314,7 +314,7 @@ class XmlFileHelper(object):
                 self.dom = ET.parse(open(self.local_file_path, "r"))
                 self.root = self.dom.getroot()
             except ET.ParseError as e:
-                syslog.syslog(syslog.LOG_ERR, "aussearch: bad cache xml file %s: %s" % (self.local_file_path, e))
+                log.error("aussearch: bad cache xml file %s: %s" % (self.local_file_path, e))
                 self.root = None
                 file_stale = True
 
@@ -330,12 +330,12 @@ class XmlFileHelper(object):
                     # hence we pass a utc timezone to get the current utc time as a timezone aware time
                     # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
                     now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check xml file: %s expires %s" %
+                    log.debug("aussearch: check xml file: %s expires %s" %
                                   (self.local_file_path, check_datetime))
                     
                     if now_datetime >= check_datetime:
                         file_stale = True
-                        syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file is stale: %s" % (self.local_file_path))
+                        log.debug("aussearch: xml file is stale: %s" % (self.local_file_path))
                 else:
                     check_datetime = datetime.datetime.utcfromtimestamp(os.path.getmtime(self.local_file_path)) + \
                                      datetime.timedelta(seconds=searcher.staleness_time)
@@ -346,20 +346,17 @@ class XmlFileHelper(object):
                 # If not stale from cache information, check if amoc XML exists and check its sent time
                 # Generally only ftp files have amoc check files
                 if not file_stale and self.is_ftp:
-                    syslog.syslog(syslog.LOG_DEBUG,
-                                  "aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
+                    log.debug("aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
                                   (self.local_file))
                     try:
                         data = FileFetch.fetch(self.xml_file_amoc, searcher.request_headers, True)
                         amoc_dom = ET.fromstring(data)
                         sentTimeCache = self.root.find('amoc/sent-time').text
                         sentTimeAmoc = amoc_dom.find('sent-time').text
-                        syslog.syslog(syslog.LOG_DEBUG,
-                                      "aussearch: xml: %s: sent-time: %s" % (self.local_file_path, sentTimeCache))
-                        syslog.syslog(syslog.LOG_DEBUG,
-                                      "aussearch: xml: %s: sent-time: %s" % (self.xml_file_amoc, sentTimeAmoc))
+                        log.debug("aussearch: xml: %s: sent-time: %s" % (self.local_file_path, sentTimeCache))
+                        log.debug("aussearch: xml: %s: sent-time: %s" % (self.xml_file_amoc, sentTimeAmoc))
                         if sentTimeAmoc != sentTimeCache:
-                            syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file is stale: %s" %
+                            log.debug("aussearch: xml file is stale: %s" %
                                           (self.local_file_path))
                             file_stale = True
                     except (AttributeError, IOError, ET.ParseError):
@@ -375,11 +372,11 @@ class XmlFileHelper(object):
                 data = FileFetch.fetch(self.xml_file, searcher.request_headers, self.is_ftp)
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: xml file downloaded: %s" % (self.xml_file))
+                    log.debug("aussearch: xml file downloaded: %s" % (self.xml_file))
                 self.dom = ET.parse(open(self.local_file_path, "r"))
                 self.root = self.dom.getroot()
             except IOError as e:
-                syslog.syslog(syslog.LOG_ERR, "aussearch: cannot download xml file %s: %s" % (self.xml_file, e))
+                log.debug("aussearch: cannot download xml file %s: %s" % (self.xml_file, e))
                 self.root = None
         
         if self.root is not None:
@@ -496,7 +493,7 @@ class JsonFileHelper(object):
             try:
                 self.root = json.load(open(self.local_file_path, "r"))
             except (IOError, ValueError) as e:
-                syslog.syslog(syslog.LOG_ERR, "aussearch: cannot load local json file %s: %s" % (self.local_file_path, e))
+                log.error("aussearch: cannot load local json file %s: %s" % (self.local_file_path, e))
                 self.root = None
                 file_stale = True
 
@@ -515,21 +512,21 @@ class JsonFileHelper(object):
                     # hence we pass a utc timezone to get the current utc time as a timezone aware time
                     # eg. datetime.datetime(2016, 12, 4, 0, 52, 34, tzinfo=tzutc())
                     now_datetime = datetime.datetime.now(dateutil.tz.tzutc())
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: check json file: %s expires %s" %
+                    log.debug("aussearch: check json file: %s expires %s" %
                                   (self.local_file_path, check_datetime))
 
                     if now_datetime <= check_datetime:
                         file_stale = False
                     else:
                         file_stale = True
-                        syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file is stale: %s" % (self.local_file_path))
+                        log.debug("aussearch: json file is stale: %s" % (self.local_file_path))
                 else:
                     file_stale = True
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file bad data assuming stale: %s" %
+                    log.debug("aussearch: json file bad data assuming stale: %s" %
                                   (self.local_file_path))
         else:
             file_stale = True
-            syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file does not exist: %s" %
+            log.debug("aussearch: json file does not exist: %s" %
                           (self.local_file_path))
         
         if file_stale:
@@ -537,10 +534,10 @@ class JsonFileHelper(object):
                 data = FileFetch.fetch(self.json_file, searcher.request_headers)
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
-                    syslog.syslog(syslog.LOG_DEBUG, "aussearch: json file downloaded: %s" % (self.json_file))
+                    log.debug("aussearch: json file downloaded: %s" % (self.json_file))
                 self.root = json.load(open(self.local_file_path, "r"))
             except IOError as e:
-                syslog.syslog(syslog.LOG_ERR, "aussearch: cannot download json file %s: %s" % (self.json_file, e))
+                log.error("aussearch: cannot download json file %s: %s" % (self.json_file, e))
 
         if self.root is not None:
             self.root_node = JSONNode(self.root)
