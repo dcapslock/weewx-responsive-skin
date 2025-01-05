@@ -1,4 +1,4 @@
-import datetime
+﻿import datetime
 import dateutil.parser
 import dateutil.tz
 import os.path
@@ -185,7 +185,9 @@ class ausutils(SearchList):
         try:
             self.cache_root = self.generator.skin_dict['AusSearch']['cache_root']
         except KeyError:
-            self.cache_root = '/var/lib/weewx/aussearch'
+            self.cache_root = '~/weewx-cache/aussearch'
+
+        self.cache_root = os.path.expanduser(self.cache_root)
         
         try:
             self.request_headers = self.generator.skin_dict['AusSearch']['request_headers']
