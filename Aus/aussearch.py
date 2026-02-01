@@ -1,4 +1,6 @@
-﻿import datetime
+﻿from asyncio.log import logger
+import datetime
+from xmlrpc.client import Boolean
 import dateutil.parser
 import dateutil.tz
 import os.path
@@ -6,21 +8,23 @@ import pprint
 import xml.etree.cElementTree as ET
 import json
 import logging
+import time
+from subprocess import PIPE, Popen
 
 try:
     import http.client as httplib #python3+
 except:
-    import httplib      #python2
+    import httplib      # type: ignore #python2
 
 try:
     from urllib.request import Request, urlopen #python3+
 except ImportError:
-    from urllib2 import Request, urlopen        #python2
+    from urllib2 import Request, urlopen        # type: ignore #python2
 
 try:
     from urllib.parse import urlparse   #python3+
 except ImportError:
-    from urlparse import urlparse
+    from urlparse import urlparse # type: ignore #pthon2
 
 import weewx.units
 import weeutil.weeutil
@@ -208,7 +212,34 @@ class ausutils(SearchList):
         
         if not os.path.exists(self.cache_root):
             os.makedirs(self.cache_root)
-        
+
+        try:
+            ftp_use_ssh = self.generator.skin_dict['AusSearch']['ftp_use_ssh']
+            ftp_use_ssh = True if str(ftp_use_ssh).lower() in ['1', 'true', 'yes'] else False
+        except KeyError:
+            ftp_use_ssh = False
+
+        self.aus['ftp_use_ssh'] = ftp_use_ssh
+
+        if ftp_use_ssh:
+            try:
+                ftp_ssh_user = self.generator.skin_dict['AusSearch']['ftp_ssh_user']
+            except KeyError:
+                ftp_ssh_user = False
+
+            self.aus['ftp_ssh_user'] = ftp_ssh_user
+
+            try:
+                ftp_ssh_host = self.generator.skin_dict['AusSearch']['ftp_ssh_host']
+            except KeyError:
+                ftp_ssh_host = False
+            
+            self.aus['ftp_ssh_host'] = ftp_ssh_host
+
+            if not ftp_ssh_user or not ftp_ssh_host:
+                log.error("aussearch: ftp_use_ssh is true but ftp_ssh_user or ftp_ssh_host not set properly")
+                self.aus['ftp_use_ssh'] = False
+
         try:
             xml_files = self.generator.skin_dict['AusSearch']['xml_files']
         except KeyError:
@@ -216,10 +247,12 @@ class ausutils(SearchList):
         
         if xml_files is not None:
             for xml_file in xml_files:
-                self.aus[xml_file] = XmlFileHelper(self.generator.skin_dict['AusSearch']['xml_files'][xml_file],
-                                                     self,
-                                                     generator.formatter,
-                                                     generator.converter)
+                xml_file_helper = XmlFileHelper(self.generator.skin_dict['AusSearch']['xml_files'][xml_file],
+                                                    self,
+                                                    generator.formatter,
+                                                    generator.converter)
+                if xml_file_helper.root is not None:
+                    self.aus[xml_file] = xml_file_helper
 
         try:
             json_files = self.generator.skin_dict['AusSearch']['json_files']
@@ -228,10 +261,12 @@ class ausutils(SearchList):
 
         if json_files is not None:
             for json_file in json_files:
-                self.aus[json_file] = JsonFileHelper(self.generator.skin_dict['AusSearch']['json_files'][json_file],
+                json_file_helper = JsonFileHelper(self.generator.skin_dict['AusSearch']['json_files'][json_file],
                                                      self,
                                                      generator.formatter,
                                                      generator.converter)
+                if json_file_helper.root is not None:
+                    self.aus[json_file] = json_file_helper
     
         try:
             localization = self.generator.skin_dict['AusSearch']['local']
@@ -341,17 +376,19 @@ class XmlFileHelper(object):
                 else:
                     check_datetime = datetime.datetime.utcfromtimestamp(os.path.getmtime(self.local_file_path)) + \
                                      datetime.timedelta(seconds=searcher.staleness_time)
+                    log.debug("aussearch: xml: check xml file: %s stale %s" % (self.local_file_path, check_datetime))
                     now_datetime = datetime.datetime.utcnow()
                     if now_datetime >= check_datetime:
+                        log.debug("aussearch: xml file is stale: %s" % (self.local_file_path))
                         file_stale = True
 
                 # If not stale from cache information, check if amoc XML exists and check its sent time
                 # Generally only ftp files have amoc check files
                 if not file_stale and self.is_ftp:
-                    log.debug("aussearch: xml: checking cache sent-time va remote amoc sent-time: %s" %
+                    log.debug("aussearch: xml: checking cache sent-time via remote amoc sent-time: %s" %
                                   (self.local_file))
                     try:
-                        data = FileFetch.fetch(self.xml_file_amoc, searcher.request_headers, True)
+                        data = FileFetch.fetch(self.xml_file_amoc, searcher.request_headers, True, searcher.aus)
                         amoc_dom = ET.fromstring(data)
                         sentTimeCache = self.root.find('amoc/sent-time').text
                         sentTimeAmoc = amoc_dom.find('sent-time').text
@@ -371,15 +408,19 @@ class XmlFileHelper(object):
 
         if file_stale:
             try:
-                data = FileFetch.fetch(self.xml_file, searcher.request_headers, self.is_ftp)
+                data = FileFetch.fetch(self.xml_file, searcher.request_headers, self.is_ftp, searcher.aus)
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
+                    file_stale = False
                     log.debug("aussearch: xml file downloaded: %s" % (self.xml_file))
+                self.root = None
                 self.dom = ET.parse(open(self.local_file_path, "r"))
                 self.root = self.dom.getroot()
-            except IOError as e:
-                log.debug("aussearch: cannot download xml file %s: %s" % (self.xml_file, e))
-                self.root = None
+            except (AttributeError, IOError, ET.ParseError) as e:
+                log.debug("aussearch: bad file download xml file %s: %s" % (self.xml_file, e))
+
+        if file_stale and self.root is not None:
+            log.debug("aussearch: using stale xml file: %s" % (self.local_file_path))
         
         if self.root is not None:
             self.root_node = XMLNode(self.root)
@@ -392,6 +433,7 @@ class XmlFileHelper(object):
     def __getattr__(self, child_or_attrib):
         # This is to get around bugs in the Python version of Cheetah's namemapper:
         if child_or_attrib in ['__call__', 'has_key']:
+            print("aussearch: XmlFileHelper file: %s, __getattr__ called for %s" % (self.xml_file, child_or_attrib))
             raise AttributeError
         
         if self.root_node is not None:
@@ -533,7 +575,7 @@ class JsonFileHelper(object):
         
         if file_stale:
             try:
-                data = FileFetch.fetch(self.json_file, searcher.request_headers)
+                data = FileFetch.fetch(self.json_file, searcher.request_headers, False, searcher.aus)
                 with open(self.local_file_path, 'w') as f:
                     f.write(data)
                     log.debug("aussearch: json file downloaded: %s" % (self.json_file))
@@ -615,20 +657,33 @@ class JSONNode(object):
 
 class FileFetch(object):
     @staticmethod
-    def fetch(url, headers, is_ftp=False):
+    def fetch(url, headers, is_ftp=False, conf=None):
         # Use urllib2 for FTP
         # Use http.client/httplib for all else as BOM needs to see header 'Connection: keep-alive' 
         # to believe we are a browser
         if (is_ftp):
-            request = Request(url, headers)
-            fp = urlopen(request)
-            data = fp.read().decode()
-            fp.close()
-            return data
+            if conf is not None and conf['ftp_use_ssh']:
+                user=conf['ftp_ssh_user']
+                host=conf['ftp_ssh_host']
+                cmd=f"curl -u anonymous: {url}"
+                ssh_command = f"ssh {user}@{host} {cmd}"
+                log.debug("aussearch: fetching ftp via ssh command: %s" % (ssh_command))
+                process = Popen(ssh_command, stdout=PIPE, stderr=None, shell=True)
+                data=process.communicate()[0]
+                return data.decode()
+            else:
+                log.debug("aussearch: fetching ftp url: %s" % (url))
+                request = Request(url, headers)
+                fp = urlopen(request)
+                data = fp.read().decode()
+                fp.close()
+                return data
         else:
             parsedUrl = urlparse(url)
-            connection = httplib.HTTPConnection(parsedUrl.netloc)
+            connection = httplib.HTTPConnection(parsedUrl.netloc, timeout=10)
             connection.request('GET', parsedUrl.path, headers=headers)
             response = connection.getresponse()
+            if response.status != 200:
+                raise IOError("Bad response %s for url %s" % (response.status, url))
             data = response.read().decode()
             return data
