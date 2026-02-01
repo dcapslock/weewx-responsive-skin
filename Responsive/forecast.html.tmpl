@@ -238,7 +238,7 @@
                 </div>
               </div>
             </div>
-            #if $Extras.has_key('use_warn')
+            #if $Extras.has_key('use_warn') and $Extras.use_warn == '1'
             <div class="panel panel-primary">
               <div class="panel-heading">
                 <h4 class="panel-title">
@@ -255,23 +255,18 @@
                       <tr>
                         <td class="text-primary">Current Warnings</td>
                       </tr>
-                      #if $aus.WARNINGS.channel.getNode('item[1]') is None
+                      #set $warnings = $aus.WARNINGS.channel.getNodes('item')
+                      #if len($warnings) == 0
                       <tr>
                         <td>
                           None
                         </td>
                       </tr>
                       #end if
-                      ## Assume there would be no more than 20 concurrent warnings
-                      ## Not using While in case XML breaks in some way and we get stuck in a loop
-                      #for $wnCount in range(1,21)
-                      #set $wnIndex = '[' + str($wnCount) +']'
-                      #if $aus.WARNINGS.channel.getNode('item'+$wnIndex) is None
-                        #break
-                      #end if
+                      #for $warning in $warnings
                       <tr>
                         <td>
-                          <a href="$aus.WARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.WARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                          <a href="$warning.link" target="_blank">$warning.title</a>
                         </td>
                       </tr>
                       #end for

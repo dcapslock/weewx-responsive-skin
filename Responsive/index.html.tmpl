@@ -4,6 +4,7 @@
 ## actually in Latin-1, then you should replace the string "UTF-8" with "latin-1"
 #encoding UTF-8
 #import dateutil.parser
+#set $station_url = $Extras.get('station_url', $station.station_url)
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -503,26 +504,21 @@
                       <tr>
                         <td class="text-primary">Current Warnings</td>
                       </tr>
-                      #if $aus.WARNINGS.channel.getNode('item[1]') is None
+                      #set $warnings = $aus.WARNINGS.channel.getNodes('item')
+                      #if len($warnings) == 0
                       <tr>
                         <td>
                           None
                         </td>
                       </tr>
                       #end if
-                      ## Assume there would be no more than 20 concurrent warnings
-                      ## Not using While in case XML breaks in some way and we get stuck in a loop
-                      #set $severeWarning = False
-                      #for $wnCount in range(1,21)
-                      #set $wnIndex = '[' + str($wnCount) +']'
-                      #if $aus.WARNINGS.channel.getNode('item'+$wnIndex) is None
-                      #break
-                      #end if
+                      #for $warning in $warnings
                       <tr>
                         <td>
-                          <a href="$aus.WARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.WARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                          <a href="$warning.link" target="_blank">$warning.title</a>
                           ## Set sever icon in header if severe warnings i.e. "Severe Weather Warning" or "Severe Thunderstorm Warning"
-                          #if "Severe" in $aus.WARNINGS.channel.getNode('item'+$wnIndex).title.toString()
+                          #set $severeWarning = False
+                          #if "Severe" in $warning.title.toString()
                           #set $severeWarning = True
                           #end if
                         </td>
@@ -593,6 +589,25 @@
                 <div class="panel-body">
                   <a href="$Extras.webcam_url">
                     <img src="$Extras.webcam_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Webcam" />
+                  </a>
+                  <p class="text-center">Click on the image above for the Webcam page</p>
+                </div>
+              </div>
+            </div>
+            #end if
+            #if $Extras.has_key('webcam2_img')
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a class="accordian-toggle collapsed" data-toggle="collapse" data-parent="#accordionTwo" href="#collapseAccTwoEightA">
+                    Webcam 2
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="collapseAccTwoEightA">
+                <div class="panel-body">
+                  <a href="$Extras.webcam2_url">
+                    <img src="$Extras.webcam2_img" class="center-block img-responsive" style="padding-bottom: 5px;" alt="Webcam" />
                   </a>
                   <p class="text-center">Click on the image above for the Webcam page</p>
                 </div>
@@ -683,7 +698,7 @@
                     </tr>
                     <tr>
                       <td style="border-bottom: none;">Altitude:</td>
-                      <td style="border-bottom: none;">$("%.1f&deg;" % $almanac.sun.alt)</td>
+                      <td style="border-bottom: none;">$("%.1f&deg;" % $almanac.sun.altitude)</td>
                     </tr>
                     <tr>
                       <td style="border-bottom: none;">Right ascension:</td>
@@ -942,7 +957,7 @@
       "@type" : "Article",
       "Headline" : "$Extras.location_long Weather",
       "datePublished" : "$current.dateTime.format("%Y-%m-%dT%H:%M:%S")$Extras.ISO8061_delta",
-      "image" : "$station.station_url/daytempdew.png",
+      "image" : "$station_url/daytempdew.png",
       #if $day.appTemp.has_data and $Extras.has_key('use_apptemp') and $Extras.use_apptemp == "1"
       "articleSection" : "Current Conditions: Outside Temperature $current.outTemp App. Temperature $current.appTemp ($aus.feelslike($current.appTemp.raw, $current.dateTime.raw)) Dewpoint $current.dewpoint Humidity $current.outHumidity Barometer $current.barometer Wind $current.windSpeed from $current.windDir ($current.windDir.ordinal_compass) Rain Today $day.rain.sum"
       #else
@@ -956,7 +971,7 @@
       "@type" : "WebSite",
       "name" : "$Extras.location_long Weather",
       "alternateName" : "Current $Extras.location_long Weather",
-      "url" : "$station.station_url"
+      "url" : "$station_url"
       }
     </script>
   </body>

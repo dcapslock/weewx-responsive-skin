@@ -9,6 +9,7 @@
 ##
 ## Radar and Satellite included
 ##
+#set $station_url = $Extras.get('station_url', $station.station_url)
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -21,7 +22,7 @@
     <link href="weewx-responsive.css" rel="stylesheet">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <link rel="icon" type="image/png" href="$station.station_url/favicon.ico">
+    <link rel="icon" type="image/png" href="$station_url/favicon.ico">
     <script type='text/javascript'>//<![CDATA[ 
       jQuery(window).load(function(){
         jQuery('div.btn-group ul.dropdown-menu li a').on('click', function (e) {
@@ -41,7 +42,7 @@
         <div class="col-md-12 panel-heading">
           <div class="col-md-6">
             <h4>
-                <div class="pull-left"><a href="$station.station_url"><span class="glyphicon glyphicon-home" style="color: white"></span></a>&nbsp;&nbsp;$station.location Weather - Storms</div>
+                <div class="pull-left"><a href="$station_url"><span class="glyphicon glyphicon-home" style="color: white"></span></a>&nbsp;&nbsp;$station.location Weather - Storms</div>
                 <div class="pull-right">
                     #if $Extras.has_key('use_warn') and $Extras.use_warn == '1'
                     <a style="color: white;" href="#" data-toggle="tooltip" title="Severe weather warnings active"><span id="icon-severe" class="hidden glyphicon glyphicon-exclamation-sign"></span></a>
@@ -128,26 +129,21 @@
                       <tr>
                         <td class="text-primary">Current Warnings</td>
                       </tr>
-                      #if $aus.WARNINGS.channel.getNode('item[1]') is None
+                      #set $warnings = $aus.WARNINGS.channel.getNodes('item')
+                      #if len($warnings) == 0
                       <tr>
                         <td>
                           None
                         </td>
                       </tr>
                       #end if
-                      ## Assume there would be no more than 20 concurrent warnings
-                      ## Not using While in case XML breaks in some way and we get stuck in a loop
-                      #set $severeWarning = False
-                      #for $wnCount in range(1,21)
-                      #set $wnIndex = '[' + str($wnCount) +']'
-                      #if $aus.WARNINGS.channel.getNode('item'+$wnIndex) is None
-                      #break
-                      #end if
+                      #for $warning in $warnings
                       <tr>
                         <td>
-                          <a href="$aus.WARNINGS.channel.getNode('item'+$wnIndex).link" target="_blank">$aus.WARNINGS.channel.getNode('item'+$wnIndex).title</a>
+                          <a href="$warning.link" target="_blank">$warning.title</a>
                           ## Set sever icon in header if severe warnings i.e. "Severe Weather Warning" or "Severe Thunderstorm Warning"
-                          #if "Severe" in $aus.WARNINGS.channel.getNode('item'+$wnIndex).title.toString()
+                          #set $severeWarning = False
+                          #if "Severe" in $warning.title.toString()
                           #set $severeWarning = True
                           #end if
                         </td>
