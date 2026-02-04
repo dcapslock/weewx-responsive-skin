@@ -512,12 +512,12 @@
                         </td>
                       </tr>
                       #end if
+                      #set $severeWarning = False
                       #for $warning in $warnings
                       <tr>
                         <td>
                           <a href="$warning.link" target="_blank">$warning.title</a>
                           ## Set sever icon in header if severe warnings i.e. "Severe Weather Warning" or "Severe Thunderstorm Warning"
-                          #set $severeWarning = False
                           #if "Severe" in $warning.title.toString()
                           #set $severeWarning = True
                           #end if
